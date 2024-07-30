@@ -1,7 +1,9 @@
 {
     "build": {
-        "dockerfile": "Dockerfile"
+        "dockerfile": "Dockerfile",
+        "context": ".."
     },
+    "onCreateCommand": "bash ./scripts/installDependencies.sh",
     "customizations": {
         "vscode": {
             "extensions": [

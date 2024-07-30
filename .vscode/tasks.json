@@ -2,9 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "COMPILE_DEBUGGABLE_PROGRAM_TASK",
+            "label": "compileDebuggableProgram_TASK",
             "type": "shell",
-            "command": "bash ./scripts/compileProgram.sh -g"
+            "command": "bash ./scripts/compileProgram.sh -g",
         }
     ]
 }
