@@ -6,4 +6,5 @@ fi
 infer run -- \
     clang $__CLANG_OPTIONS_ARGUMENTS \
     -o $OUTPUT_EXECUTABLE_PATH \
-    $MAIN_SOURCE_FILE_PATH
+    $MAIN_SOURCE_FILE_PATH \
+    /usr/local/lib/libtcc.a 
