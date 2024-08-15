@@ -5,6 +5,7 @@ if [ ! -d $OUTPUT_DIRECTORY_PATH ]; then
 fi
 infer run -- \
     clang $__CLANG_OPTIONS_ARGUMENTS \
+    -Wall -Wextra -Wpedantic \
     -o $OUTPUT_EXECUTABLE_PATH \
     -lpng16 \
     $MAIN_SOURCE_FILE_PATH \
