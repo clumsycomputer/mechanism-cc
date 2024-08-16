@@ -8,5 +8,6 @@ infer run -- \
     -Wall -Wextra -Wpedantic \
     -o $OUTPUT_EXECUTABLE_PATH \
     -lpng16 \
-    $MAIN_SOURCE_FILE_PATH \
-    /usr/local/lib/libtcc.a
+    /workspaces/mechanism-cc/source/main.c \
+    /usr/local/lib/libtcc.a \
+    /workspaces/mechanism-cc/source/ImagePixels.c

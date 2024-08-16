@@ -7,7 +7,7 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "ms-vscode.cpptools",
+                "llvm-vs-code-extensions.vscode-clangd",
                 "llvm-vs-code-extensions.lldb-dap"
             ]
         }

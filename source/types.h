@@ -11,6 +11,6 @@ typedef int64_t S64;
 typedef float IEEE32;
 typedef double IEEE64;
 
-typedef char *String;
+typedef char* String;
 typedef U8 Byte;
-typedef Byte *HeapAllocation;
+typedef Byte* HeapAllocation;

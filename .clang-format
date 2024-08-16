@@ -3,3 +3,4 @@ ColumnLimit: 0
 BinPackArguments: false
 BinPackParameters: false
 PenaltyBreakBeforeFirstCallParameter: 1000000
+PointerAlignment: Left
