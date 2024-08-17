@@ -132,9 +132,13 @@
 
 int main() {
   Rgb8bitImagePixels imagePixels =
-      createRgb8bitImagePixels(
-          512,
-          512);
+    createRgb8bitImagePixels(
+      512,
+      512);
+  printf("%d\n", getPixelsKind(imagePixels));
   printf("%d\n", getPixelsChannelCount(imagePixels));
+  printf("%d\n", getPixelsChannelBitDepth(imagePixels));
+  printf("%d\n", getPixelsWidth(imagePixels));
+  printf("%d\n", getPixelsHeight(imagePixels));
   return 0;
 }

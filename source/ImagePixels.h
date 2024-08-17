@@ -34,4 +34,8 @@ typedef enum {
 
 Rgb8bitImagePixels createRgb8bitImagePixels(U16 pixelsWidth, U16 pixelsHeight);
 
+U8 getPixelsKind(__ImagePixels imagePixels);
 U8 getPixelsChannelCount(__ImagePixels imagePixels);
+U8 getPixelsChannelBitDepth(__ImagePixels imagePixels);
+U16 getPixelsWidth(__ImagePixels imagePixels);
+U16 getPixelsHeight(__ImagePixels imagePixels);
