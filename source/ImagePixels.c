@@ -44,6 +44,10 @@ __ImagePixels __createImagePixels(
   return imagePixelsResult;
 }
 
+void freeImagePixels(__ImagePixels imagePixels) {
+  free(imagePixels - PIXELS_FIELDS_SIZE);
+}
+
 Rgb8bitImagePixels createRgb8bitImagePixels(U16 pixelsWidth, U16 pixelsHeight)
 {
   return __createImagePixels(

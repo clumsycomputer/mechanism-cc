@@ -4,7 +4,12 @@
         {
             "label": "compileDebuggableProgram_TASK",
             "type": "shell",
-            "command": "bash ./scripts/compileProgram.sh -g",
+            "command": "bash ./scripts/compileProgram.sh \"infer run --\" \"-g -Wall -Wextra -Wpedantic\"",
+        },
+        {
+            "label": "compileSanitizedAddressProgram_TASK",
+            "type": "shell",
+            "command": "bash ./scripts/compileProgram.sh \"\" \"-fsanitize=address -fsanitize=leak -fsanitize=undefined\"",
         }
     ]
 }
