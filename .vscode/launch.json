@@ -9,7 +9,7 @@
             "args": [],
             "env": [],
             "cwd": "${workspaceRoot}",
-            "preLaunchTask": "compileDebuggableProgram_TASK",
+            "preLaunchTask": "compileDebugProgram_TASK",
             "internalConsoleOptions": "openOnSessionStart",
             "disableASLR": false,
             "initCommands": ["settings set target.disable-aslr false"],

@@ -33,6 +33,7 @@ typedef enum {
 } PixelsChannelBitDepthOptions;
 
 Rgb8bitImagePixels createRgb8bitImagePixels(U16 pixelsWidth, U16 pixelsHeight);
+void freeImagePixels(__ImagePixels imagePixels);
 
 U8 getPixelsKind(__ImagePixels imagePixels);
 U8 getPixelsChannelCount(__ImagePixels imagePixels);

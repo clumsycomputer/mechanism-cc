@@ -2,14 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "compileDebuggableProgram_TASK",
+            "label": "compileDebugProgram_TASK",
             "type": "shell",
-            "command": "bash ./scripts/compileProgram.sh \"infer run --\" \"-g -Wall -Wextra -Wpedantic\"",
-        },
-        {
-            "label": "compileSanitizedAddressProgram_TASK",
-            "type": "shell",
-            "command": "bash ./scripts/compileProgram.sh \"\" \"-fsanitize=address -fsanitize=leak -fsanitize=undefined\"",
+            "command": "bash ./scripts/compileDebugProgram.sh",
         }
     ]
 }

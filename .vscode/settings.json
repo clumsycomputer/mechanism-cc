@@ -1,3 +1,3 @@
 {
-    "lldb-dap.executable-path": "/usr/bin/lldb-vscode-14"
+    "lldb-dap.executable-path": "/usr/lib/clang+llvm-18.1.8-x86_64-linux-gnu-ubuntu-18.04/bin/lldb-dap"
 }

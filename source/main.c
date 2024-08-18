@@ -130,7 +130,8 @@
 #include "ImagePixels.h"
 #include <stdio.h>
 
-int main() {
+int main()
+{
   Rgb8bitImagePixels imagePixels =
     createRgb8bitImagePixels(
       512,
@@ -140,5 +141,6 @@ int main() {
   printf("%d\n", getPixelsChannelBitDepth(imagePixels));
   printf("%d\n", getPixelsWidth(imagePixels));
   printf("%d\n", getPixelsHeight(imagePixels));
+  freeImagePixels(imagePixels);
   return 0;
 }
