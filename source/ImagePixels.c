@@ -1,5 +1,6 @@
 #include "ImagePixels.h"
 #include <png.h>
+#include <pngconf.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -58,19 +59,17 @@ Rgb8bitImagePixels createRgb8bitImagePixels(
     pixelsHeight);
 }
 
-// getting weird runtime error when filling pixels for 16bit rgb
-// runtime error: store to misaligned address 0x756f9377e807 for type 'U16' (aka 'unsigned short'), which requires 2 byte alignment
-// Rgb16bitImagePixels createRgb16bitImagePixels(
-//   U16 pixelsWidth,
-//   U16 pixelsHeight)
-// {
-//   return __createImagePixels(
-//     __PixelsKind_RGB_16bit,
-//     __PixelsChannelCount_RGB,
-//     __PixelsChannelBitDepth_16,
-//     pixelsWidth,
-//     pixelsHeight);
-// }
+Rgb16bitImagePixels createRgb16bitImagePixels(
+  U16 pixelsWidth,
+  U16 pixelsHeight)
+{
+  return __createImagePixels(
+    __PixelsKind_RGB_16bit,
+    __PixelsChannelCount_RGB,
+    __PixelsChannelBitDepth_16,
+    pixelsWidth,
+    pixelsHeight);
+}
 
 void freeImagePixels(__ImagePixels imagePixels)
 {
@@ -112,6 +111,10 @@ U16 getPixelsHeight(__ImagePixels imagePixels)
   return *atPixelsHeight(imagePixels);
 }
 
+U64 getPixelsByteCount(__ImagePixels imagePixels) {
+  return getPixelsPixelByteCount(imagePixels) * getPixelsWidth(imagePixels) * getPixelsHeight(imagePixels);
+}
+
 void __writeImagePixels(
   U64 pngColorType__,
   __ImagePixels imagePixels,
@@ -127,33 +130,32 @@ void __writeImagePixels(
       NULL,
       NULL);
   png_infop pngInfoPtr = png_create_info_struct(pngWriteStruct);
-  png_bytep pixelRowsPtr[pixelsHeight];
-  for (int rowIndex = 0; rowIndex < pixelsHeight; rowIndex++)
-  {
-    pixelRowsPtr[rowIndex] = &(imagePixels[rowIndex * pixelsWidth * pixelsPixelByteCount]);
-  }
   png_init_io(
     pngWriteStruct,
     outputFilePtr);
   png_set_IHDR(
     pngWriteStruct,
     pngInfoPtr,
-    getPixelsWidth(imagePixels),
-    getPixelsHeight(imagePixels),
-    getPixelsChannelBitDepth(imagePixels),
-    pngColorType__,
+    (png_uint_32)getPixelsWidth(imagePixels),
+    (png_uint_32)getPixelsHeight(imagePixels),
+    (int)getPixelsChannelBitDepth(imagePixels),
+    (int)pngColorType__,
     PNG_INTERLACE_NONE,
     PNG_COMPRESSION_TYPE_DEFAULT,
     PNG_FILTER_TYPE_DEFAULT);
   png_write_info(
     pngWriteStruct,
     pngInfoPtr);
-  png_write_image(
-    pngWriteStruct,
-    pixelRowsPtr);
+  for (int rowIndex = 0; rowIndex < pixelsHeight; rowIndex++)
+  {
+    int pixelsRowPtrOffset = rowIndex * pixelsWidth * pixelsPixelByteCount;
+    png_write_row(
+      pngWriteStruct,
+      imagePixels + pixelsRowPtrOffset);
+  }
   png_write_end(
     pngWriteStruct,
-    NULL);
+    pngInfoPtr);
   png_destroy_write_struct(
     &pngWriteStruct,
     &pngInfoPtr);

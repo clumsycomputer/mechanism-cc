@@ -31,7 +31,7 @@
 int main(void)
 {
   Rgb16bitImagePixels imagePixels =
-    createRgb8bitImagePixels(
+    createRgb16bitImagePixels(
       512,
       512);
   printf("%d\n", getPixelsKind(imagePixels));
@@ -50,9 +50,9 @@ int main(void)
       int pixelRedChannelIndex = pixelIndexOffset;
       int pixelGreenChannelIndex = pixelIndexOffset + getPixelsChannelByteDepth(imagePixels);
       int pixelBlueChannelIndex = pixelIndexOffset + 2 * getPixelsChannelByteDepth(imagePixels);
-      *(U8*)(imagePixels + pixelRedChannelIndex) = 255;
-      *(U8*)(imagePixels + pixelGreenChannelIndex) = 0;
-      *(U8*)(imagePixels + pixelBlueChannelIndex) = 128;
+      *(U16*)(imagePixels + pixelRedChannelIndex) = 65535;
+      *(U16*)(imagePixels + pixelGreenChannelIndex) = 32767;
+      *(U16*)(imagePixels + pixelBlueChannelIndex) = 0;
     }
   }
   FILE* imagePixelsOutputFile =

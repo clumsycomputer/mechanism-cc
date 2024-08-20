@@ -35,7 +35,7 @@ typedef enum {
 } __PixelsChannelBitDepthOptions;
 
 Rgb8bitImagePixels createRgb8bitImagePixels(U16 pixelsWidth, U16 pixelsHeight);
-// Rgb16bitImagePixels createRgb16bitImagePixels(U16 pixelsWidth, U16 pixelsHeight);
+Rgb16bitImagePixels createRgb16bitImagePixels(U16 pixelsWidth, U16 pixelsHeight);
 void freeImagePixels(__ImagePixels imagePixels);
 
 U8 getPixelsKind(__ImagePixels imagePixels);
@@ -45,5 +45,6 @@ U8 getPixelsChannelByteDepth(__ImagePixels imagePixels);
 U8 getPixelsPixelByteCount(__ImagePixels imagePixels);
 U16 getPixelsWidth(__ImagePixels imagePixels);
 U16 getPixelsHeight(__ImagePixels imagePixels);
+U64 getPixelsByteCount(__ImagePixels imagePixels);
 
 void writeRgbImagePixels(__ImagePixels imagePixels, FILE* outputFilePtr);
