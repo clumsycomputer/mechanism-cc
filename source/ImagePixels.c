@@ -4,6 +4,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+U64 calcPixelsDataByteCount(
+  U8 pixelsChannelCount__,
+  U8 pixelsChannelBitDepth__,
+  U16 pixelsWidth,
+  U16 pixelsHeight)
+{
+  return pixelsChannelCount__ * (pixelsChannelBitDepth__ / BITS_PER_BYTE) * pixelsWidth * pixelsHeight;
+}
+
+U64 calcPixelsByteCount(
+  U8 pixelsChannelCount__,
+  U8 pixelsChannelBitDepth__,
+  U16 pixelsWidth,
+  U16 pixelsHeight)
+{
+  return PIXELS_METADATA_BYTE_SIZE + calcPixelsDataByteCount(
+                                       pixelsChannelCount__,
+                                       pixelsChannelBitDepth__,
+                                       pixelsWidth,
+                                       pixelsHeight);
+}
+
 U8* atPixelsKind(__ImagePixels imagePixels)
 {
   return imagePixels - PIXELS_KIND_PTR_OFFSET;
@@ -36,9 +58,13 @@ __ImagePixels __createImagePixels(
   U16 pixelsWidth,
   U16 pixelsHeight)
 {
-  U64 pixelsByteCount = pixelsChannelCount__ * (pixelsChannelBitDepth__ / BITS_PER_BYTE) * pixelsWidth * pixelsHeight;
-  __ImagePixels imagePixelsResult = (__ImagePixels)malloc(pixelsByteCount + PIXELS_FIELDS_SIZE);
-  imagePixelsResult += PIXELS_FIELDS_SIZE;
+  __ImagePixels imagePixelsResult = (__ImagePixels)malloc(
+    calcPixelsByteCount(
+      pixelsChannelCount__,
+      pixelsChannelBitDepth__,
+      pixelsWidth,
+      pixelsHeight));
+  imagePixelsResult += PIXELS_METADATA_BYTE_SIZE;
   *atPixelsKind(imagePixelsResult) = pixelsKind__;
   *atPixelsChannelCount(imagePixelsResult) = pixelsChannelCount__;
   *atPixelsChannelBitDepth(imagePixelsResult) = pixelsChannelBitDepth__;
@@ -73,7 +99,7 @@ Rgb16bitImagePixels createRgb16bitImagePixels(
 
 void freeImagePixels(__ImagePixels imagePixels)
 {
-  free(imagePixels - PIXELS_FIELDS_SIZE);
+  free(imagePixels - PIXELS_METADATA_BYTE_SIZE);
 }
 
 U8 getPixelsKind(__ImagePixels imagePixels)
@@ -111,7 +137,8 @@ U16 getPixelsHeight(__ImagePixels imagePixels)
   return *atPixelsHeight(imagePixels);
 }
 
-U64 getPixelsByteCount(__ImagePixels imagePixels) {
+U64 getPixelsDataByteCount(__ImagePixels imagePixels)
+{
   return getPixelsPixelByteCount(imagePixels) * getPixelsWidth(imagePixels) * getPixelsHeight(imagePixels);
 }
 
