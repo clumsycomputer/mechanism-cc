@@ -43,9 +43,7 @@ typedef enum
 U64 calcPixelsDataByteCount(U8 pixelsChannelCount__, U8 pixelsChannelBitDepth__, U16 pixelsWidth, U16 pixelsHeight);
 U64 calcPixelsByteCount(U8 pixelsChannelCount__, U8 pixelsChannelBitDepth__, U16 pixelsWidth, U16 pixelsHeight);
 
-Rgb8bitImagePixels createRgb8bitImagePixels(U16 pixelsWidth, U16 pixelsHeight);
-Rgb16bitImagePixels createRgb16bitImagePixels(U16 pixelsWidth, U16 pixelsHeight);
-void freeImagePixels(__ImagePixels imagePixels);
+__ImagePixels __initPixelsMetadata(U8 pixelsKind__, U8 pixelsChannelCount__, U8 pixelsChannelBitDepth__, U16 pixelsWidth, U16 pixelsHeight, __ImagePixels unintializedPixels);
 
 U8 getPixelsKind(__ImagePixels imagePixels);
 U8 getPixelsChannelCount(__ImagePixels imagePixels);

@@ -51,55 +51,20 @@ U16* atPixelsHeight(__ImagePixels imagePixels)
   return (U16*)(imagePixels - PIXELS_HEIGHT_PTR_OFFSET);
 }
 
-__ImagePixels __createImagePixels(
+__ImagePixels __initPixelsMetadata(
   U8 pixelsKind__,
   U8 pixelsChannelCount__,
   U8 pixelsChannelBitDepth__,
   U16 pixelsWidth,
-  U16 pixelsHeight)
+  U16 pixelsHeight,
+  __ImagePixels unintializedPixels)
 {
-  __ImagePixels imagePixelsResult = (__ImagePixels)malloc(
-    calcPixelsByteCount(
-      pixelsChannelCount__,
-      pixelsChannelBitDepth__,
-      pixelsWidth,
-      pixelsHeight));
-  imagePixelsResult += PIXELS_METADATA_BYTE_SIZE;
-  *atPixelsKind(imagePixelsResult) = pixelsKind__;
-  *atPixelsChannelCount(imagePixelsResult) = pixelsChannelCount__;
-  *atPixelsChannelBitDepth(imagePixelsResult) = pixelsChannelBitDepth__;
-  *atPixelsWidth(imagePixelsResult) = pixelsWidth;
-  *atPixelsHeight(imagePixelsResult) = pixelsHeight;
-  return imagePixelsResult;
-}
-
-Rgb8bitImagePixels createRgb8bitImagePixels(
-  U16 pixelsWidth,
-  U16 pixelsHeight)
-{
-  return __createImagePixels(
-    __PixelsKind_RGB_8bit,
-    __PixelsChannelCount_RGB,
-    __PixelsChannelBitDepth_8,
-    pixelsWidth,
-    pixelsHeight);
-}
-
-Rgb16bitImagePixels createRgb16bitImagePixels(
-  U16 pixelsWidth,
-  U16 pixelsHeight)
-{
-  return __createImagePixels(
-    __PixelsKind_RGB_16bit,
-    __PixelsChannelCount_RGB,
-    __PixelsChannelBitDepth_16,
-    pixelsWidth,
-    pixelsHeight);
-}
-
-void freeImagePixels(__ImagePixels imagePixels)
-{
-  free(imagePixels - PIXELS_METADATA_BYTE_SIZE);
+  *atPixelsKind(unintializedPixels) = pixelsKind__;
+  *atPixelsChannelCount(unintializedPixels) = pixelsChannelCount__;
+  *atPixelsChannelBitDepth(unintializedPixels) = pixelsChannelBitDepth__;
+  *atPixelsWidth(unintializedPixels) = pixelsWidth;
+  *atPixelsHeight(unintializedPixels) = pixelsHeight;
+  return unintializedPixels;
 }
 
 U8 getPixelsKind(__ImagePixels imagePixels)

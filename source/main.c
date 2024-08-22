@@ -27,13 +27,11 @@
 // }
 #include "ImagePixels.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 int main(void)
 {
-  Rgb16bitImagePixels imagePixels =
-    createRgb16bitImagePixels(
-      512,
-      512);
+  
   printf("%d\n", getPixelsKind(imagePixels));
   printf("%d\n", getPixelsChannelCount(imagePixels));
   printf("%d\n", getPixelsChannelBitDepth(imagePixels));
@@ -41,28 +39,29 @@ int main(void)
   printf("%d\n", getPixelsPixelByteCount(imagePixels));
   printf("%d\n", getPixelsWidth(imagePixels));
   printf("%d\n", getPixelsHeight(imagePixels));
-  for (int rowIndex = 0; rowIndex < getPixelsHeight(imagePixels); rowIndex++)
-  {
-    int rowInitialPixelOffset = rowIndex * getPixelsWidth(imagePixels) * getPixelsPixelByteCount(imagePixels);
-    for (int columnIndex = 0; columnIndex < getPixelsWidth(imagePixels); columnIndex++)
-    {
-      int pixelIndexOffset = rowInitialPixelOffset + columnIndex * getPixelsPixelByteCount(imagePixels);
-      int pixelRedChannelIndex = pixelIndexOffset;
-      int pixelGreenChannelIndex = pixelIndexOffset + getPixelsChannelByteDepth(imagePixels);
-      int pixelBlueChannelIndex = pixelIndexOffset + 2 * getPixelsChannelByteDepth(imagePixels);
-      *(U16*)(imagePixels + pixelRedChannelIndex) = 65535;
-      *(U16*)(imagePixels + pixelGreenChannelIndex) = 32767;
-      *(U16*)(imagePixels + pixelBlueChannelIndex) = 0;
-    }
-  }
-  FILE* imagePixelsOutputFile =
-    fopen(
-      "foo.png",
-      "wb");
-  writeRgbImagePixels(
-    imagePixels,
-    imagePixelsOutputFile);
-  fclose(imagePixelsOutputFile);
-  freeImagePixels(imagePixels);
+  free(heapArena);
+  // for (int rowIndex = 0; rowIndex < getPixelsHeight(imagePixels); rowIndex++)
+  // {
+  //   int rowInitialPixelOffset = rowIndex * getPixelsWidth(imagePixels) * getPixelsPixelByteCount(imagePixels);
+  //   for (int columnIndex = 0; columnIndex < getPixelsWidth(imagePixels); columnIndex++)
+  //   {
+  //     int pixelIndexOffset = rowInitialPixelOffset + columnIndex * getPixelsPixelByteCount(imagePixels);
+  //     int pixelRedChannelIndex = pixelIndexOffset;
+  //     int pixelGreenChannelIndex = pixelIndexOffset + getPixelsChannelByteDepth(imagePixels);
+  //     int pixelBlueChannelIndex = pixelIndexOffset + 2 * getPixelsChannelByteDepth(imagePixels);
+  //     *(U16*)(imagePixels + pixelRedChannelIndex) = 65535;
+  //     *(U16*)(imagePixels + pixelGreenChannelIndex) = 32767;
+  //     *(U16*)(imagePixels + pixelBlueChannelIndex) = 0;
+  //   }
+  // }
+  // FILE* imagePixelsOutputFile =
+  //   fopen(
+  //     "foo.png",
+  //     "wb");
+  // writeRgbImagePixels(
+  //   imagePixels,
+  //   imagePixelsOutputFile);
+  // fclose(imagePixelsOutputFile);
+  // freeImagePixels(imagePixels);
   return 0;
 }
