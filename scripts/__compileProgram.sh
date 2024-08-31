@@ -7,6 +7,6 @@ fi
 $__MAYBE_INFER_RUN_INVOCATION \
     clang $__CLANG_OPTIONS_ARGUMENTS \
         -o $OUTPUT_EXECUTABLE_PATH \
-        -lpng16 \
+        -lz \
         $(find $SOURCE_DIRECTORY_PATH -name "*.c") \
         /usr/local/lib/libtcc.a

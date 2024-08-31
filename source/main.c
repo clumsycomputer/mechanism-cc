@@ -25,43 +25,52 @@
 //     tcc_delete(tcc_state);
 //     return 0;
 // }
-#include "ImagePixels.h"
+#include "ImagePool.h"
 #include <stdio.h>
-#include <stdlib.h>
+#include <zlib.h>
 
 int main(void)
 {
-  
-  printf("%d\n", getPixelsKind(imagePixels));
-  printf("%d\n", getPixelsChannelCount(imagePixels));
-  printf("%d\n", getPixelsChannelBitDepth(imagePixels));
-  printf("%d\n", getPixelsChannelByteDepth(imagePixels));
-  printf("%d\n", getPixelsPixelByteCount(imagePixels));
-  printf("%d\n", getPixelsWidth(imagePixels));
-  printf("%d\n", getPixelsHeight(imagePixels));
-  free(heapArena);
-  // for (int rowIndex = 0; rowIndex < getPixelsHeight(imagePixels); rowIndex++)
-  // {
-  //   int rowInitialPixelOffset = rowIndex * getPixelsWidth(imagePixels) * getPixelsPixelByteCount(imagePixels);
-  //   for (int columnIndex = 0; columnIndex < getPixelsWidth(imagePixels); columnIndex++)
-  //   {
-  //     int pixelIndexOffset = rowInitialPixelOffset + columnIndex * getPixelsPixelByteCount(imagePixels);
-  //     int pixelRedChannelIndex = pixelIndexOffset;
-  //     int pixelGreenChannelIndex = pixelIndexOffset + getPixelsChannelByteDepth(imagePixels);
-  //     int pixelBlueChannelIndex = pixelIndexOffset + 2 * getPixelsChannelByteDepth(imagePixels);
-  //     *(U16*)(imagePixels + pixelRedChannelIndex) = 65535;
-  //     *(U16*)(imagePixels + pixelGreenChannelIndex) = 32767;
-  //     *(U16*)(imagePixels + pixelBlueChannelIndex) = 0;
-  //   }
-  // }
-  // FILE* imagePixelsOutputFile =
-  //   fopen(
-  //     "foo.png",
-  //     "wb");
-  // writeRgbImagePixels(
-  //   imagePixels,
-  //   imagePixelsOutputFile);
-  // fclose(imagePixelsOutputFile);
-  // freeImagePixels(imagePixels);
+  ImagePoolView imagePoolView =
+    createRgb8bitImagePool(
+      3,
+      3);
+  int ROW_DEFLATE_FILTER_OPTION_SIZE = 1;
+  U8 ROW_DEFLATE_FILTER_OPTION = 0;
+  for (int rowIndex = 0; rowIndex < getPixelsHeight(imagePoolView.poolPixels); rowIndex++)
+  {
+    int rowSize =
+      getPixelsWidth(imagePoolView.poolPixels) * getPixelsPixelByteCount(imagePoolView.poolPixels) + ROW_DEFLATE_FILTER_OPTION_SIZE;
+    int rowInitialOffset =
+      rowIndex * rowSize;
+    *(U8*)(imagePoolView.poolPixels + rowInitialOffset) =
+      ROW_DEFLATE_FILTER_OPTION;
+    int rowInitialPixelOffset =
+      rowInitialOffset + ROW_DEFLATE_FILTER_OPTION_SIZE;
+    for (int columnIndex = 0; columnIndex < getPixelsWidth(imagePoolView.poolPixels); columnIndex++)
+    {
+      int pixelIndexOffset = rowInitialPixelOffset + columnIndex * getPixelsPixelByteCount(imagePoolView.poolPixels);
+      int pixelRedChannelIndex = pixelIndexOffset;
+      int pixelGreenChannelIndex = pixelIndexOffset + getPixelsChannelByteDepth(imagePoolView.poolPixels);
+      int pixelBlueChannelIndex = pixelIndexOffset + 2 * getPixelsChannelByteDepth(imagePoolView.poolPixels);
+      *(U8*)(imagePoolView.poolPixels + pixelRedChannelIndex) = 255;
+      *(U8*)(imagePoolView.poolPixels + pixelGreenChannelIndex) = 0;
+      *(U8*)(imagePoolView.poolPixels + pixelBlueChannelIndex) = 0;
+    }
+  }
+  updatePngDataPixels(
+    imagePoolView.poolPixels,
+    imagePoolView.poolPng);
+  FILE* imageFile =
+    fopen(
+      "foo.png",
+      "wb");
+  fwrite(
+    imagePoolView.poolPng,
+    1,
+    getPngDataByteCount(imagePoolView.poolPng),
+    imageFile);
+  fclose(imageFile);
+  freeImagePool(imagePoolView);
   return 0;
 }

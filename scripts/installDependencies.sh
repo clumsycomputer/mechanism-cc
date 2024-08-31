@@ -8,17 +8,10 @@ sudo curl --location --remote-name https://github.com/TinyCC/tinycc/archive/refs
     && sudo ./configure \
     && sudo make \
     && sudo make install
-sudo curl --location --remote-name https://github.com/pnggroup/libpng/archive/refs/heads/libpng16.zip \
-    && unzip -d $DEPENDENCIES_DIRECTORY_PATH ./libpng16.zip \
-    && rm ./libpng16.zip \
-    && cd $DEPENDENCIES_DIRECTORY_PATH/libpng-libpng16 \
-    && sudo ./configure \
-    && sudo make \
-    && sudo make install
-sudo curl --location --remote-name https://github.com/madler/zlib/archive/refs/heads/master.zip \
-    && unzip -d $DEPENDENCIES_DIRECTORY_PATH ./master.zip \
-    && rm ./master.zip \
-    && cd $DEPENDENCIES_DIRECTORY_PATH/zlib-master \
+sudo curl --location --remote-name https://github.com/madler/zlib/releases/download/v1.2.13/zlib-1.2.13.tar.xz \
+    && tar --directory $DEPENDENCIES_DIRECTORY_PATH --extract --verbose --file ./zlib-1.2.13.tar.xz \
+    && rm ./zlib-1.2.13.tar.xz  \
+    && cd $DEPENDENCIES_DIRECTORY_PATH/zlib-1.2.13 \
     && sudo ./configure \
     && sudo make \
     && sudo make install
