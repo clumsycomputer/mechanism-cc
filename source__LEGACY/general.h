@@ -3,23 +3,6 @@
 #ifndef MECHANISM_CC_GENERAL_H
 #define MECHANISM_CC_GENERAL_H
 
-typedef enum {
-    // __ValueAddressKind_STATIC = 0x01,
-    __ValueAddressKind__CONSTANT = 0x02,
-    __ValueAddressKind__VARIABLE = 0x03,
-} ValueAddressKind;
-
-typedef enum {
-    __ValueMutabilityKind__STATIC = 0x01,
-    __ValueMutabilityKind__CONSTANT = 0x02,
-    __ValueMutabilityKind__VARIABLE = 0x03,
-} ValueMutabilityKind;
-
-typedef enum {
-    __ValueEndianessKind__BIG = 0x01,
-    __ValueEndianessKind__LITTLE = 0x02,
-} ValueEndianessKind;
-
 typedef uint8_t U8;
 typedef int8_t S8;
 typedef uint16_t U16;
