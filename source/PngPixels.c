@@ -1,6 +1,5 @@
 #include "PngPixels.h"
 #include "PngEncoding.h"
-#include <stddef.h>
 
 U64 calcPixelsDataRowSize(U32 pixelsWidth)
 {

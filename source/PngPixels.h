@@ -5,12 +5,12 @@
 
 typedef enum
 {
-  __PixelsChannelCountOption_Rgb = 3
+  __PixelsChannelCountOption_Rgb = (U8)3
 } PixelsChannelCountOption;
 
 typedef enum
 {
-  __PixelsChannelBitDepthOption_8bit = 8
+  __PixelsChannelBitDepthOption_8bit = (U8)8
 } PixelsChannelBitDepthOption;
 
 typedef struct {
