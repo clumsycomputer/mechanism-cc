@@ -38,7 +38,7 @@ void initRgb8bitPngPixels(Rgb8bitPngPixels* pngPixels, U32 pixelsWidth, U32 pixe
     U64 pixelsDataPngEncodingRowFilterMethodOffset =
       pixelsRowIndex * pngPixels->__cache.dataRowSize;
     *(pixelsData + pixelsDataPngEncodingRowFilterMethodOffset) =
-      ihdrDataPngFilterMethod__Rgb8bitPngEncoding__VALUE_DEFAULT;
+      ihdrDataPngFilterMethod__Rgb8bitPngEncoding__VALUE;
   }
 }
 

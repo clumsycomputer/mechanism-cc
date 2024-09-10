@@ -12,8 +12,8 @@ int main(void)
     sizeofRgb8bitPngPixels(pixelsWidth, pixelsHeight);
   U64 maxEncodingSize =
     maxsizeofRgb8bitPngEncoding(pixelsWidth, pixelsHeight);
-  U64 poolSize = 
-  pixelsSize + maxEncodingSize;
+  U64 poolSize =
+    pixelsSize + maxEncodingSize;
   U8* pngPool =
     (U8*)malloc(poolSize);
   Rgb8bitPngPixels* pngPixels =
@@ -52,7 +52,7 @@ int main(void)
   fwrite(
     pngEncoding,
     1,
-    Rgb8bitPngEncoding__SIZE(*atIdatCompressedPixelsSize(pngEncoding)),
+    getRgb8bitPngEncodingSize(pngEncoding),
     pngFile_ptr);
   fclose(pngFile_ptr);
   free(pngPool);

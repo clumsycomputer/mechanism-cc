@@ -101,32 +101,49 @@ IendSignature* atIendSignature(U8* pngEncoding, IdatCompressedPixelsSize idatCom
   return (IendSignature*)(pngEncoding + iendSignature__Rgb8bitPngEncoding__VALUE_ADDRESS_OFFSET(idatCompressedPixelsSize));
 }
 
-IendSignature* atIendSignatureCrc(U8* pngEncoding, IdatCompressedPixelsSize idatCompressedPixelsSize)
+IendSignatureCrc* atIendSignatureCrc(U8* pngEncoding, IdatCompressedPixelsSize idatCompressedPixelsSize)
 {
   return (IendSignatureCrc*)(pngEncoding + iendSignatureCrc__Rgb8bitPngEncoding__VALUE_ADDRESS_OFFSET(idatCompressedPixelsSize));
 }
 
 void initRgb8bitPngEncoding(U8* pngEncoding, Rgb8bitPngPixels* pngPixels)
 {
-  *atPngSignature(pngEncoding) = 0x0A1A0A0D474E5089;                                                    // 8-byte little-endian architecture
-  *atIhdrDataSize(pngEncoding) = 0x0D000000;                                                            // 4-byte little-endian architecture (13, signature + data)
-  *atIhdrSignature(pngEncoding) = 0x52444849;                                                           // 4-byte little-endian architecture ('IHDR', ASCII)
-  *atIhdrDataPngChannelBitDepth(pngEncoding) = 0x08;                                                    // 1-byte (8)
-  *atIhdrDataPngChannelKind(pngEncoding) = 0x02;                                                        // 1-byte (truecolor, rgb)
-  *atIhdrDataPngCompressionMethod(pngEncoding) = 0x00;                                                  // 1-byte (zlib deflate)
-  *atIhdrDataPngFilterMethod(pngEncoding) = ihdrDataPngFilterMethod__Rgb8bitPngEncoding__VALUE_DEFAULT; // 1-byte (none)
-  *atIhdrDataPngInterlaceMethod(pngEncoding) = 0x00;                                                    // 1-byte (none)
-  *atIdatSignature(pngEncoding) = 0x54414449;                                                           // 4-byte little-endian architecture ('IDAT', ASCII)
+  *atIhdrDataPngChannelBitDepth(pngEncoding) =
+    ihdrDataPngChannelBitDepth__Rgb8bitPngEncoding__VALUE;
+  *atIhdrDataPngChannelKind(pngEncoding) =
+    ihdrDataPngChannelKind__Rgb8bitPngEncoding__VALUE;
+  *atIhdrDataPngCompressionMethod(pngEncoding) =
+    ihdrDataPngCompressionMethod__Rgb8bitPngEncoding__VALUE;
+  *atIhdrDataPngFilterMethod(pngEncoding) =
+    ihdrDataPngFilterMethod__Rgb8bitPngEncoding__VALUE;
+  *atIhdrDataPngInterlaceMethod(pngEncoding) =
+    ihdrDataPngInterlaceMethod__Rgb8bitPngEncoding__VALUE;
+  *atPngSignature(pngEncoding) =
+    swapEndianU64(
+      pngSignature__Rgb8bitPngEncoding__VALUE);
+  *atIhdrDataSize(pngEncoding) =
+    swapEndianU32(
+      ihdrDataSize__Rgb8bitPngEncoding__VALUE);
+  *atIhdrSignature(pngEncoding) =
+    swapEndianU32(
+      fourByteStringToU32(
+        ihdrSignature__Rgb8bitPngEncoding__VALUE));
+  *atIdatSignature(pngEncoding) =
+    swapEndianU32(
+      fourByteStringToU32(
+        idatSignature__Rgb8bitPngEncoding__VALUE));
   *atIhdrDataPngPixelWidth(pngEncoding) =
-    swapEndianU32(pngPixels->width);
+    swapEndianU32(
+      pngPixels->width);
   *atIhdrDataPngPixelHeight(pngEncoding) =
-    swapEndianU32(pngPixels->height);
+    swapEndianU32(
+      pngPixels->height);
   *atIhdrSignatureDataCrc(pngEncoding) =
     swapEndianU32(
       crc32(
         0,
         (Bytef*)atIhdrSignature(pngEncoding),
-        IHDR_CHUNK_SIZE));
+        (U8*)atIhdrSignatureDataCrc(pngEncoding) - (U8*)atIhdrSignature(pngEncoding)));
 }
 
 void encodeRgb8bitPngPixels(U8* pngEncoding, Rgb8bitPngPixels* pngPixels)
@@ -166,9 +183,23 @@ void encodeRgb8bitPngPixels(U8* pngEncoding, Rgb8bitPngPixels* pngPixels)
         (Bytef*)atIdatSignature(pngEncoding),
         idatSignature__Rgb8bitPngEncoding__VALUE_SIZE + idatCompressedPixelsSize));
   *atIendDataSize(pngEncoding, idatCompressedPixelsSize) =
-    0x00000000;
+    swapEndianU32(
+      iendDataSize__Rgb8bitPngEncoding__VALUE);
   *atIendSignature(pngEncoding, idatCompressedPixelsSize) =
-    0x444E4549;
+    swapEndianU32(
+      fourByteStringToU32(
+        iendSignature__Rgb8bitPngEncoding__VALUE));
   *atIendSignatureCrc(pngEncoding, idatCompressedPixelsSize) =
-    0x82426082;
+    swapEndianU32(
+      crc32(
+        0,
+        (Bytef*)atIendSignature(pngEncoding, idatCompressedPixelsSize),
+        iendSignature__Rgb8bitPngEncoding__VALUE_SIZE));
+}
+
+U64 getRgb8bitPngEncodingSize(U8* pngEncoding)
+{
+  return Rgb8bitPngEncoding__SIZE(
+    swapEndianU32(
+      *atIdatCompressedPixelsSize(pngEncoding)));
 }

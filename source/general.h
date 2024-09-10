@@ -4,7 +4,6 @@
 #define MECHANISM_CC_GENERAL_H
 
 typedef enum {
-    // __ValueAddressKind_STATIC = 0x01,
     __ValueAddressKind__CONSTANT = 0x02,
     __ValueAddressKind__VARIABLE = 0x03,
 } ValueAddressKind;
@@ -40,5 +39,7 @@ typedef Byte* HeapAllocation;
 
 void printBytes(U8* startAddress, U64 byteCount);
 U32 swapEndianU32(U32 value);
+U64 swapEndianU64(U64 value);
+U32 fourByteStringToU32(String fourByteString);
 
 #endif
