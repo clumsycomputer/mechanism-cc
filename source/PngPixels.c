@@ -41,7 +41,7 @@ void initRgb8bitPngPixels(Rgb8bitPngPixels* pngPixels, U32 pixelsWidth, U32 pixe
   }
 }
 
-Rgb8bitPixelChannels* atPixelsDataPixelChannels(Rgb8bitPngPixels* pngPixels, U32 pixelRowIndex, U32 pixelColumnIndex)
+Rgb8bitPixelChannels* atPixelsDataPixelChannels(Rgb8bitPngPixels* pngPixels, U32 pixelColumnIndex, U32 pixelRowIndex)
 {
   U64 pixelsPixelChannelsOffset =
     pixelRowIndex * pngPixels->__cache.dataRowSize + ihdrDataPngFilterMethod__Rgb8bitPngEncoding__VALUE_SIZE + pixelColumnIndex * __Rgb8bitPixelChannels_PNG_PIXELS_SIZE;

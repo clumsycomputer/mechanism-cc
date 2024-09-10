@@ -36,10 +36,10 @@ int main(void)
       currentPixelChannels_ptr =
         atPixelsDataPixelChannels(
           pngPixels,
-          pixelRowIndex,
-          pixelColumnIndex);
+          pixelColumnIndex,
+          pixelRowIndex);
       currentPixelChannels_ptr->red = 255;
-      currentPixelChannels_ptr->green = 79;
+      currentPixelChannels_ptr->green = 178;
       currentPixelChannels_ptr->blue = 0;
     }
   }
@@ -64,12 +64,11 @@ int main(void)
     currentPixelChannels_ptr =
       atPixelsDataPixelChannels(
         pngPixels,
-        pointRowIndex,
-        pointColumnIndex);
+        pointColumnIndex,
+        pointRowIndex);
     currentPixelChannels_ptr->red = 0;
     currentPixelChannels_ptr->green = 0;
     currentPixelChannels_ptr->blue = 0;
-  // }
   }
   encodeRgb8bitPngPixels(
     pngEncoding,
