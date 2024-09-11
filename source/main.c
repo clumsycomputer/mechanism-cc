@@ -5,18 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct
-{
-  IEEE32 originX;
-  IEEE32 originY;
-  IEEE32 magnitude;
-  Rgb8bitPixelChannels color;
-} Cell;
-
 int main(void)
 {
-  U32 pixelsWidth = 512 + 1;
-  U32 pixelsHeight = 512 + 1;
+  U32 pixelsWidth = 512;
+  U32 pixelsHeight = 512;
   U64 pixelsSize =
     sizeofRgb8bitPngPixels(pixelsWidth, pixelsHeight);
   U64 maxEncodingSize =
@@ -59,11 +51,11 @@ int main(void)
   IEEE64 viewRightBoundsX = viewCenterX + viewMagnitude; // viewLeftBoundsX + viewLength
   IEEE64 viewTopBoundsY = viewCenterY + viewMagnitude;
   IEEE64 viewBottomBoundsY = viewCenterY - viewMagnitude; // viewTopBoundsY - viewLength
-  U32 circleCellCount = 256;
+  U32 circleCellCount = 1024;
   IEEE64 circleRadius = 0.9;
   IEEE64 circleOriginX = 0;
   IEEE64 circleOriginY = 0;
-  IEEE64 circleCellMagnitude = 0.005;
+  IEEE64 circleCellMagnitude = 0.002;
   for (U32 cellIndex = 0; cellIndex < circleCellCount; cellIndex++)
   {
     IEEE64 circleCellAngle =
@@ -90,20 +82,24 @@ int main(void)
     }
     IEEE64 viewCellLeftX =
       circleCellLeftX < viewLeftBoundsX ? viewLeftBoundsX : circleCellLeftX;
-    IEEE64 viewCellRightX =
-      circleCellRightX > viewRightBoundsX ? viewRightBoundsX : circleCellRightX;
+    // IEEE64 viewCellRightX =
+    //   circleCellRightX > viewRightBoundsX ? viewRightBoundsX : circleCellRightX;
     IEEE64 viewCellTopY =
       circleCellTopY > viewTopBoundsY ? viewTopBoundsY : circleCellTopY;
-    IEEE64 viewCellBottomY =
-      circleCellBottomY < viewBottomBoundsY ? viewTopBoundsY : circleCellBottomY;
+    // IEEE64 viewCellBottomY =
+    //   circleCellBottomY < viewBottomBoundsY ? viewTopBoundsY : circleCellBottomY;
+    U32 viewCellMagnitude = 
+      circleCellMagnitude / viewMagnitude * pixelsWidth;
     U32 viewCellLeftColumnIndex =
       (viewCellLeftX - viewLeftBoundsX) / viewLength * pixelsWidth;
     U32 viewCellRightColumnIndex =
-      (viewCellRightX - viewLeftBoundsX) / viewLength * pixelsWidth;
+        viewCellLeftColumnIndex + viewCellMagnitude;
+      // (viewCellRightX - viewLeftBoundsX) / viewLength * pixelsWidth;
     U32 viewCellTopRowIndex =
       pixelsHeight - ((viewCellTopY - viewBottomBoundsY) / viewLength * pixelsHeight);
     U32 viewCellBottomRowIndex =
-      pixelsHeight - ((viewCellBottomY - viewBottomBoundsY) / viewLength * pixelsHeight);
+      viewCellTopRowIndex + viewCellMagnitude;
+      // pixelsHeight - ((viewCellBottomY - viewBottomBoundsY) / viewLength * pixelsHeight);
     for (U32 pixelColumnIndex = viewCellLeftColumnIndex; pixelColumnIndex <= viewCellRightColumnIndex; pixelColumnIndex++)
     {
       for (U32 pixelRowIndex = viewCellTopRowIndex; pixelRowIndex <= viewCellBottomRowIndex; pixelRowIndex++)
