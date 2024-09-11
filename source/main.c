@@ -7,8 +7,8 @@
 
 int main(void)
 {
-  U32 pixelsWidth = 512;
-  U32 pixelsHeight = 512;
+  U32 pixelsWidth = 2048;
+  U32 pixelsHeight = 2048;
   U64 pixelsSize =
     sizeofRgb8bitPngPixels(pixelsWidth, pixelsHeight);
   U64 maxEncodingSize =
@@ -39,7 +39,7 @@ int main(void)
           pixelColumnIndex,
           pixelRowIndex);
       currentPixelChannels_ptr->red = 255;
-      currentPixelChannels_ptr->green = 178;
+      currentPixelChannels_ptr->green = 97;
       currentPixelChannels_ptr->blue = 0;
     }
   }
@@ -48,14 +48,14 @@ int main(void)
   IEEE64 viewMagnitude = 1;
   IEEE64 viewLength = 2 * viewMagnitude;
   IEEE64 viewLeftBoundsX = viewCenterX - viewMagnitude;
-  IEEE64 viewRightBoundsX = viewCenterX + viewMagnitude; // viewLeftBoundsX + viewLength
-  IEEE64 viewTopBoundsY = viewCenterY + viewMagnitude;
-  IEEE64 viewBottomBoundsY = viewCenterY - viewMagnitude; // viewTopBoundsY - viewLength
+  IEEE64 viewRightBoundsX = viewCenterX + viewMagnitude; // viewLeftBoundsX - viewLength
+  IEEE64 viewTopBoundsY = viewCenterY - viewMagnitude;
+  IEEE64 viewBottomBoundsY = viewCenterY + viewMagnitude; // viewTopBoundsY + viewLength
   U32 circleCellCount = 1024;
   IEEE64 circleRadius = 0.9;
   IEEE64 circleOriginX = 0;
   IEEE64 circleOriginY = 0;
-  IEEE64 circleCellMagnitude = 0.002;
+  IEEE64 circleCellMagnitude = 0.005;
   for (U32 cellIndex = 0; cellIndex < circleCellCount; cellIndex++)
   {
     IEEE64 circleCellAngle =
@@ -73,33 +73,29 @@ int main(void)
     IEEE64 circleCellRightX =
       circleCellOriginX + circleCellMagnitude;
     IEEE64 circleCellTopY =
-      circleCellOriginY + circleCellMagnitude;
-    IEEE64 circleCellBottomY =
       circleCellOriginY - circleCellMagnitude;
-    if (circleCellRightX < viewLeftBoundsX || circleCellLeftX > viewRightBoundsX || circleCellBottomY > viewTopBoundsY || circleCellTopY < viewBottomBoundsY)
+    IEEE64 circleCellBottomY =
+      circleCellOriginY + circleCellMagnitude;
+    if (circleCellRightX < viewLeftBoundsX || circleCellLeftX > viewRightBoundsX || circleCellTopY > viewBottomBoundsY || circleCellBottomY < viewTopBoundsY)
     {
       continue;
     }
     IEEE64 viewCellLeftX =
       circleCellLeftX < viewLeftBoundsX ? viewLeftBoundsX : circleCellLeftX;
-    // IEEE64 viewCellRightX =
-    //   circleCellRightX > viewRightBoundsX ? viewRightBoundsX : circleCellRightX;
+    IEEE64 viewCellRightX =
+      circleCellRightX > viewRightBoundsX ? viewRightBoundsX : circleCellRightX;
+    IEEE64 viewCellBottomY =
+      circleCellBottomY > viewBottomBoundsY ? viewTopBoundsY : circleCellBottomY;
     IEEE64 viewCellTopY =
-      circleCellTopY > viewTopBoundsY ? viewTopBoundsY : circleCellTopY;
-    // IEEE64 viewCellBottomY =
-    //   circleCellBottomY < viewBottomBoundsY ? viewTopBoundsY : circleCellBottomY;
-    U32 viewCellMagnitude = 
-      circleCellMagnitude / viewMagnitude * pixelsWidth;
+      circleCellTopY < viewTopBoundsY ? viewTopBoundsY : circleCellTopY;
     U32 viewCellLeftColumnIndex =
       (viewCellLeftX - viewLeftBoundsX) / viewLength * pixelsWidth;
     U32 viewCellRightColumnIndex =
-        viewCellLeftColumnIndex + viewCellMagnitude;
-      // (viewCellRightX - viewLeftBoundsX) / viewLength * pixelsWidth;
+      (viewCellRightX - viewLeftBoundsX) / viewLength * pixelsWidth;
     U32 viewCellTopRowIndex =
-      pixelsHeight - ((viewCellTopY - viewBottomBoundsY) / viewLength * pixelsHeight);
+      (viewCellTopY - viewTopBoundsY) / viewLength * pixelsHeight;
     U32 viewCellBottomRowIndex =
-      viewCellTopRowIndex + viewCellMagnitude;
-      // pixelsHeight - ((viewCellBottomY - viewBottomBoundsY) / viewLength * pixelsHeight);
+      (viewCellBottomY - viewTopBoundsY) / viewLength * pixelsHeight;
     for (U32 pixelColumnIndex = viewCellLeftColumnIndex; pixelColumnIndex <= viewCellRightColumnIndex; pixelColumnIndex++)
     {
       for (U32 pixelRowIndex = viewCellTopRowIndex; pixelRowIndex <= viewCellBottomRowIndex; pixelRowIndex++)
