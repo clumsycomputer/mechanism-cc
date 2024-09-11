@@ -1,0 +1,17 @@
+#include "general.h"
+
+#ifndef CLIP_VIEW_H
+#define CLIP_VIEW_H
+
+#define centerHorizontal__ClipView__STATIC_FIELD 0
+#define centerVertical__ClipView__STATIC_FIELD 0
+#define dimensionMagnitude__ClipView__STATIC_FIELD 1
+#define dimensionLength__ClipView__STATIC_FIELD (2 * dimensionMagnitude__ClipView__STATIC_FIELD)
+#define boundLeft__ClipView__STATIC_FIELD (centerHorizontal__ClipView__STATIC_FIELD - dimensionMagnitude__ClipView__STATIC_FIELD)
+#define boundRight__ClipView__STATIC_FIELD (centerHorizontal__ClipView__STATIC_FIELD + dimensionMagnitude__ClipView__STATIC_FIELD)
+#define boundTop__ClipView__STATIC_FIELD (centerVertical__ClipView__STATIC_FIELD - dimensionMagnitude__ClipView__STATIC_FIELD)
+#define boundBottom__ClipView__STATIC_FIELD (centerVertical__ClipView__STATIC_FIELD + dimensionMagnitude__ClipView__STATIC_FIELD)
+
+Bool isClipViewCellVisible(IEEE64 clipViewCellLeft, IEEE64 clipViewCellRight, IEEE64 clipViewCellTop, IEEE64 clipViewCellBottom);
+
+#endif

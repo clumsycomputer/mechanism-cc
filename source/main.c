@@ -1,3 +1,4 @@
+#include "ClipView.h"
 #include "PngEncoding.h"
 #include "PngPixels.h"
 #include <malloc.h>
@@ -15,11 +16,11 @@ int main(void)
     maxsizeofRgb8bitPngEncoding(pixelsWidth, pixelsHeight);
   U64 poolSize =
     pixelsSize + maxEncodingSize;
-  U8* pngPool =
-    (U8*)malloc(poolSize);
+  HeapAllocation pngPool =
+    (HeapAllocation)malloc(poolSize);
   Rgb8bitPngPixels* pngPixels =
     (Rgb8bitPngPixels*)pngPool;
-  U8* pngEncoding =
+  HeapAllocation pngEncoding =
     pngPool + pixelsSize;
   initRgb8bitPngPixels(
     pngPixels,
@@ -43,14 +44,6 @@ int main(void)
       currentPixelChannels_ptr->blue = 0;
     }
   }
-  IEEE64 viewCenterX = 0;
-  IEEE64 viewCenterY = 0;
-  IEEE64 viewMagnitude = 1;
-  IEEE64 viewLength = 2 * viewMagnitude;
-  IEEE64 viewLeftBoundsX = viewCenterX - viewMagnitude;
-  IEEE64 viewRightBoundsX = viewCenterX + viewMagnitude; // viewLeftBoundsX - viewLength
-  IEEE64 viewTopBoundsY = viewCenterY - viewMagnitude;
-  IEEE64 viewBottomBoundsY = viewCenterY + viewMagnitude; // viewTopBoundsY + viewLength
   U32 circleCellCount = 1024;
   IEEE64 circleRadius = 0.9;
   IEEE64 circleOriginX = 0;
@@ -68,37 +61,46 @@ int main(void)
       circleRadius * circleCellCos + circleOriginX;
     IEEE64 circleCellOriginY =
       circleRadius * circleCellSin + circleOriginY;
-    IEEE64 circleCellLeftX =
+    IEEE64 circleCellLeft =
       circleCellOriginX - circleCellMagnitude;
-    IEEE64 circleCellRightX =
+    IEEE64 circleCellRight =
       circleCellOriginX + circleCellMagnitude;
-    IEEE64 circleCellTopY =
+    IEEE64 circleCellTop =
       circleCellOriginY - circleCellMagnitude;
-    IEEE64 circleCellBottomY =
+    IEEE64 circleCellBottom =
       circleCellOriginY + circleCellMagnitude;
-    if (circleCellRightX < viewLeftBoundsX || circleCellLeftX > viewRightBoundsX || circleCellTopY > viewBottomBoundsY || circleCellBottomY < viewTopBoundsY)
+    IEEE64 clipViewCellLeft = circleCellLeft;
+    IEEE64 clipViewCellRight = circleCellRight;
+    IEEE64 clipViewCellTop = circleCellTop;
+    IEEE64 clipViewCellBottom = circleCellBottom;
+    if (false__Bool__STATIC_VALUE ==
+        isClipViewCellVisible(
+          clipViewCellLeft,
+          clipViewCellRight,
+          clipViewCellTop,
+          clipViewCellBottom))
     {
       continue;
     }
-    IEEE64 viewCellLeftX =
-      circleCellLeftX < viewLeftBoundsX ? viewLeftBoundsX : circleCellLeftX;
-    IEEE64 viewCellRightX =
-      circleCellRightX > viewRightBoundsX ? viewRightBoundsX : circleCellRightX;
-    IEEE64 viewCellBottomY =
-      circleCellBottomY > viewBottomBoundsY ? viewTopBoundsY : circleCellBottomY;
-    IEEE64 viewCellTopY =
-      circleCellTopY < viewTopBoundsY ? viewTopBoundsY : circleCellTopY;
-    U32 viewCellLeftColumnIndex =
-      (viewCellLeftX - viewLeftBoundsX) / viewLength * pixelsWidth;
-    U32 viewCellRightColumnIndex =
-      (viewCellRightX - viewLeftBoundsX) / viewLength * pixelsWidth;
-    U32 viewCellTopRowIndex =
-      (viewCellTopY - viewTopBoundsY) / viewLength * pixelsHeight;
-    U32 viewCellBottomRowIndex =
-      (viewCellBottomY - viewTopBoundsY) / viewLength * pixelsHeight;
-    for (U32 pixelColumnIndex = viewCellLeftColumnIndex; pixelColumnIndex <= viewCellRightColumnIndex; pixelColumnIndex++)
+    IEEE64 trimmedClipViewCellLeft =
+      clipViewCellLeft < boundLeft__ClipView__STATIC_FIELD ? boundLeft__ClipView__STATIC_FIELD : clipViewCellLeft;
+    IEEE64 trimmedClipViewCellRight =
+      clipViewCellRight > boundRight__ClipView__STATIC_FIELD ? boundRight__ClipView__STATIC_FIELD : clipViewCellRight;
+    IEEE64 trimmedClipViewCellTop =
+      clipViewCellTop < boundTop__ClipView__STATIC_FIELD ? boundTop__ClipView__STATIC_FIELD : clipViewCellTop;
+    IEEE64 trimmedClipViewCellBottom =
+      clipViewCellBottom > boundBottom__ClipView__STATIC_FIELD ? boundBottom__ClipView__STATIC_FIELD : clipViewCellBottom;
+    U32 clipViewCellPixelIndexLeft =
+      (trimmedClipViewCellLeft - boundLeft__ClipView__STATIC_FIELD) / dimensionLength__ClipView__STATIC_FIELD * pngPixels->width;
+    U32 clipViewCellPixelIndexRight =
+      (trimmedClipViewCellRight - boundLeft__ClipView__STATIC_FIELD) / dimensionLength__ClipView__STATIC_FIELD * pngPixels->width;
+    U32 clipViewCellPixelIndexTop =
+      (trimmedClipViewCellTop - boundTop__ClipView__STATIC_FIELD) / dimensionLength__ClipView__STATIC_FIELD * pngPixels->height;
+    U32 clipViewCellPixelIndexBottom =
+      (trimmedClipViewCellBottom - boundTop__ClipView__STATIC_FIELD) / dimensionLength__ClipView__STATIC_FIELD * pngPixels->height;
+    for (U32 pixelColumnIndex = clipViewCellPixelIndexLeft; pixelColumnIndex <= clipViewCellPixelIndexRight; pixelColumnIndex++)
     {
-      for (U32 pixelRowIndex = viewCellTopRowIndex; pixelRowIndex <= viewCellBottomRowIndex; pixelRowIndex++)
+      for (U32 pixelRowIndex = clipViewCellPixelIndexTop; pixelRowIndex <= clipViewCellPixelIndexBottom; pixelRowIndex++)
       {
         currentPixelChannels_ptr =
           atPixelsDataPixelChannels(
