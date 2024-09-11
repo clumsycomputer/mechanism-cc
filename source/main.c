@@ -8,8 +8,8 @@
 
 int main(void)
 {
-  U32 pixelsWidth = 2048;
-  U32 pixelsHeight = 2048;
+  U32 pixelsWidth = 512;
+  U32 pixelsHeight = 512;
   U64 pixelsSize =
     sizeofRgb8bitPngPixels(pixelsWidth, pixelsHeight);
   U64 maxEncodingSize =
@@ -44,10 +44,10 @@ int main(void)
       currentPixelChannels_ptr->blue = 0;
     }
   }
-  U32 circleCellCount = 1024;
   IEEE64 circleRadius = 0.9;
-  IEEE64 circleOriginX = 0;
-  IEEE64 circleOriginY = 0;
+  IEEE64 circleCenterHorizontal = 0;
+  IEEE64 circleCenterVertical= 0;
+  U32 circleCellCount = 1024;
   IEEE64 circleCellMagnitude = 0.005;
   for (U32 cellIndex = 0; cellIndex < circleCellCount; cellIndex++)
   {
@@ -58,9 +58,9 @@ int main(void)
     IEEE64 circleCellSin =
       sin(circleCellAngle);
     IEEE64 circleCellOriginX =
-      circleRadius * circleCellCos + circleOriginX;
+      circleRadius * circleCellCos + circleCenterHorizontal;
     IEEE64 circleCellOriginY =
-      circleRadius * circleCellSin + circleOriginY;
+      circleRadius * circleCellSin + circleCenterVertical;
     IEEE64 circleCellLeft =
       circleCellOriginX - circleCellMagnitude;
     IEEE64 circleCellRight =
