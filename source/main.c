@@ -15,8 +15,8 @@ typedef struct
 
 int main(void)
 {
-  U32 pixelsWidth = 64;
-  U32 pixelsHeight = 64;
+  U32 pixelsWidth = 512 + 1;
+  U32 pixelsHeight = 512 + 1;
   U64 pixelsSize =
     sizeofRgb8bitPngPixels(pixelsWidth, pixelsHeight);
   U64 maxEncodingSize =
@@ -59,15 +59,11 @@ int main(void)
   IEEE64 viewRightBoundsX = viewCenterX + viewMagnitude; // viewLeftBoundsX + viewLength
   IEEE64 viewTopBoundsY = viewCenterY + viewMagnitude;
   IEEE64 viewBottomBoundsY = viewCenterY - viewMagnitude; // viewTopBoundsY - viewLength
-  U32 circleCellCount = 12;
+  U32 circleCellCount = 256;
   IEEE64 circleRadius = 0.9;
   IEEE64 circleOriginX = 0;
   IEEE64 circleOriginY = 0;
-  IEEE64 circleCellMagnitude = 0.05;
-  // U32 pixelsCenterColumnIndex = pngPixels->width / 2;
-  // U32 pixelsCenterRowIndex = pngPixels->height / 2;
-  // U32 viewColumnDimensionMagnitude = pngPixels->width - viewCenterColumnIndex - 1;
-  // U32 viewRowDimensionMagnitude = pngPixels->height - viewCenterRowIndex - 1;
+  IEEE64 circleCellMagnitude = 0.005;
   for (U32 cellIndex = 0; cellIndex < circleCellCount; cellIndex++)
   {
     IEEE64 circleCellAngle =
@@ -97,31 +93,31 @@ int main(void)
     IEEE64 viewCellRightX =
       circleCellRightX > viewRightBoundsX ? viewRightBoundsX : circleCellRightX;
     IEEE64 viewCellTopY =
-      circleCellTopY < viewTopBoundsY ? viewTopBoundsY : circleCellTopY;
+      circleCellTopY > viewTopBoundsY ? viewTopBoundsY : circleCellTopY;
     IEEE64 viewCellBottomY =
-      circleCellBottomY > viewTopBoundsY ? viewTopBoundsY : circleCellBottomY;
-    U32 viewCellLeftColumnIndex = 
+      circleCellBottomY < viewBottomBoundsY ? viewTopBoundsY : circleCellBottomY;
+    U32 viewCellLeftColumnIndex =
       (viewCellLeftX - viewLeftBoundsX) / viewLength * pixelsWidth;
-    U32 viewCellRightColumnIndex = 
+    U32 viewCellRightColumnIndex =
       (viewCellRightX - viewLeftBoundsX) / viewLength * pixelsWidth;
-    // U32 viewCellTopRowIndex = 
-    //   (viewCellTop - view) / viewLength * pixelsWidth;
-    // U32 viewCellBottomRowIndex = 
-    //   (viewCellRightX - viewLeftBoundsX) / viewLength * pixelsWidth;
-    printf("%d %d\n", viewCellLeftColumnIndex, viewCellRightColumnIndex);
-    // U32 viewCellTopRowIndex = -1todo;
-    // U32 viewCellBottomRowIndex = -1todo;
-    //   (U32)(circlePointRadius * viewColumnDimensionMagnitude * pointCos) + viewCenterColumnIndex;
-    // U32 pointRowIndex =
-    //   (U32)(circlePointRadius * viewRowDimensionMagnitude * pointSin) + viewCenterRowIndex;
-    // currentPixelChannels_ptr =
-    //   atPixelsDataPixelChannels(
-    //     pngPixels,
-    //     pointColumnIndex,
-    //     pointRowIndex);
-    // currentPixelChannels_ptr->red = 0;
-    // currentPixelChannels_ptr->green = 0;
-    // currentPixelChannels_ptr->blue = 0;
+    U32 viewCellTopRowIndex =
+      pixelsHeight - ((viewCellTopY - viewBottomBoundsY) / viewLength * pixelsHeight);
+    U32 viewCellBottomRowIndex =
+      pixelsHeight - ((viewCellBottomY - viewBottomBoundsY) / viewLength * pixelsHeight);
+    for (U32 pixelColumnIndex = viewCellLeftColumnIndex; pixelColumnIndex <= viewCellRightColumnIndex; pixelColumnIndex++)
+    {
+      for (U32 pixelRowIndex = viewCellTopRowIndex; pixelRowIndex <= viewCellBottomRowIndex; pixelRowIndex++)
+      {
+        currentPixelChannels_ptr =
+          atPixelsDataPixelChannels(
+            pngPixels,
+            pixelColumnIndex,
+            pixelRowIndex);
+        currentPixelChannels_ptr->red = 0;
+        currentPixelChannels_ptr->green = 0;
+        currentPixelChannels_ptr->blue = 0;
+      }
+    }
   }
   encodeRgb8bitPngPixels(
     pngEncoding,
