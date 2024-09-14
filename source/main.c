@@ -43,33 +43,78 @@ int main(void)
       currentPixelChannels_ptr->blue = 0;
     }
   }
-  U64 pixelsAspectRatio =
-    getPixelsAspectRatio(pngPixels);
+  IEEE64 pixelsWidthOverHeightAspectRatio =
+    getPixelsWidthOverHeightAspectRatio(pngPixels);
+  IEEE64 pixelsMinimimumDimension =
+    getPixelsMinimumDimension(pngPixels);
+  IEEE64 cartesianHorizontalNormalizedDimensionMagnitude =
+    (IEEE64)pngPixels->width / pixelsMinimimumDimension;
+  IEEE64 cartesianVerticalNormalizedDimensionMagnitude =
+    (IEEE64)pngPixels->height / pixelsMinimimumDimension;
+  IEEE64 sphereOriginDepth = 2;
   IEEE64 sphereRadius = 0.9;
-  IEEE64 sphereHorizontalVerticalPolarAngle = 0;
-  IEEE64 spherePolarOrthogonalDepthAngle = 0;
-  IEEE64 sphereCellMagnitude = 0.005;
-  IEEE64 perspectiveFieldOfView = M_PI / 2;
-  IEEE64 perspectiveNearClippingPlaneDepth = 0.1;
-  IEEE64 perspectiveFarClippingPlaneDepth = 2;
-  IEEE64 spherePointHorizontal = sphereRadius * sin(sphereHorizontalVerticalPolarAngle) * cos(spherePolarOrthogonalDepthAngle);
-  IEEE64 spherePointVertical = sphereRadius * sin(sphereHorizontalVerticalPolarAngle) * sin(spherePolarOrthogonalDepthAngle);
-  IEEE64 spherePointDepth = sphereRadius * cos(sphereHorizontalVerticalPolarAngle);
+  IEEE64 sphereHorizontalVerticalPolarAngle = M_PI;
+  IEEE64 spherePolarOrthogonalDepthAngle = M_PI;
+  IEEE64 sphereCellMagnitude = 0.01;
+  IEEE64 spherePointHorizontal = sphereRadius * sin(spherePolarOrthogonalDepthAngle - M_PI_2) * cos(sphereHorizontalVerticalPolarAngle + M_PI_2);
+  IEEE64 spherePointVertical = sphereRadius * sin(spherePolarOrthogonalDepthAngle - M_PI_2) * sin(sphereHorizontalVerticalPolarAngle + M_PI_2);
+  IEEE64 spherePointDepth = sphereRadius * cos(spherePolarOrthogonalDepthAngle - M_PI_2) + sphereOriginDepth;
+  IEEE64 perspectiveFieldOfView = M_PI_2;
+  IEEE64 perspectiveNearClippingPlaneDepth = 0.001;
+  IEEE64 perspectiveFarClippingPlaneDepth = 4;
   IEEE64 perspectivePointHorizontal =
-    spherePointHorizontal * (1 / (pixelsAspectRatio * tan(perspectiveFieldOfView / 2)));
+    spherePointHorizontal * (1 / (pixelsWidthOverHeightAspectRatio * tan(perspectiveFieldOfView / 2)));
   IEEE64 perspectivePointVertical =
     spherePointVertical * (1 / tan(perspectiveFieldOfView / 2));
   IEEE64 perspectivePointDepth =
     spherePointDepth * ((perspectiveNearClippingPlaneDepth + perspectiveFarClippingPlaneDepth) / (perspectiveFarClippingPlaneDepth - perspectiveNearClippingPlaneDepth)) + 2 * perspectiveNearClippingPlaneDepth * perspectiveFarClippingPlaneDepth / (perspectiveFarClippingPlaneDepth - perspectiveNearClippingPlaneDepth);
   IEEE64 perspectivePointHomogeneous =
     spherePointDepth;
-  IEEE64 screenPointHorizontal =
+  IEEE64 cartesianPointHorizontal =
     perspectivePointHorizontal / perspectivePointHomogeneous;
-  IEEE64 screenPointVertical =
+  IEEE64 cartesianPointVertical =
     perspectivePointVertical / perspectivePointHomogeneous;
-  IEEE64 screenPointDepth =
+  IEEE64 cartesianPointDepth =
     perspectivePointDepth / perspectivePointHomogeneous;
-  printf("%f %f %f\n", screenPointHorizontal, screenPointVertical, screenPointDepth);
+  IEEE64 cartesianCellMagnitude =
+    sphereCellMagnitude / perspectivePointHomogeneous;
+
+  IEEE64 cellLeftPoint =
+    cartesianPointHorizontal - cartesianCellMagnitude;
+  IEEE64 cellRightPoint =
+    cartesianPointHorizontal + cartesianCellMagnitude;
+  IEEE64 cellTopPoint =
+    cartesianPointVertical - cartesianCellMagnitude;
+  IEEE64 cellBottomPoint =
+    cartesianPointVertical + cartesianCellMagnitude;
+  if (cellLeftPoint > cartesianHorizontalNormalizedDimensionMagnitude || cellRightPoint < -cartesianHorizontalNormalizedDimensionMagnitude || cellTopPoint > cartesianVerticalNormalizedDimensionMagnitude || cellBottomPoint < -cartesianVerticalNormalizedDimensionMagnitude)
+  {
+    return 1;
+  }
+  IEEE64 cellLeftViewPoint = cellLeftPoint < -cartesianHorizontalNormalizedDimensionMagnitude ? -cartesianHorizontalNormalizedDimensionMagnitude : cellLeftPoint;
+  IEEE64 cellRightViewPoint = cellRightPoint > cartesianHorizontalNormalizedDimensionMagnitude ? cartesianHorizontalNormalizedDimensionMagnitude : cellRightPoint;
+  IEEE64 cellTopViewPoint = cellTopPoint < -cartesianVerticalNormalizedDimensionMagnitude ? -cartesianVerticalNormalizedDimensionMagnitude : cellTopPoint;
+  IEEE64 cellBottomViewPoint = cellBottomPoint > cartesianVerticalNormalizedDimensionMagnitude ? cartesianVerticalNormalizedDimensionMagnitude : cellBottomPoint;
+  // IEEE64 cellLeftViewPixel
+  U32 cellLeftColumnIndex = (cellLeftViewPoint - -cartesianHorizontalNormalizedDimensionMagnitude) / (2 * cartesianHorizontalNormalizedDimensionMagnitude) * pngPixels->width;
+  U32 cellRightColumnIndex = (cellRightViewPoint - -cartesianHorizontalNormalizedDimensionMagnitude) / (2 * cartesianHorizontalNormalizedDimensionMagnitude) * pngPixels->width;
+  U32 cellTopRowIndex = (cellTopViewPoint - -cartesianVerticalNormalizedDimensionMagnitude) / (2 * cartesianVerticalNormalizedDimensionMagnitude) * pngPixels->height;
+  U32 cellBottomRowIndex = (cellBottomViewPoint - -cartesianVerticalNormalizedDimensionMagnitude) / (2 * cartesianVerticalNormalizedDimensionMagnitude) * pngPixels->height;
+  for (U32 cellCurrentColumnIndex = cellLeftColumnIndex; cellCurrentColumnIndex <= cellRightColumnIndex; cellCurrentColumnIndex++)
+  {
+    for (U32 cellCurrentRowIndex = cellTopRowIndex; cellCurrentRowIndex < cellBottomRowIndex; cellCurrentRowIndex++)
+    {
+      currentPixelChannels_ptr =
+        atPixelsDataPixelChannels(
+          pngPixels,
+          cellCurrentColumnIndex,
+          cellCurrentRowIndex);
+      currentPixelChannels_ptr->red = 0;
+      currentPixelChannels_ptr->green = 0;
+      currentPixelChannels_ptr->blue = 0;
+    }
+  }
+
   // U32 sphereCellCount = 512;
 
   // IEEE64 circleRadius = 0.9;

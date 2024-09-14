@@ -48,7 +48,12 @@ Rgb8bitPixelChannels* atPixelsDataPixelChannels(Rgb8bitPngPixels* pngPixels, U32
   return (Rgb8bitPixelChannels*)(pngPixels->data_ptr + pixelsPixelChannelsOffset);
 }
 
-IEEE64 getPixelsAspectRatio(Rgb8bitPngPixels* pngPixels)
+IEEE64 getPixelsWidthOverHeightAspectRatio(Rgb8bitPngPixels* pngPixels)
 {
   return (IEEE64)pngPixels->width / pngPixels->height;
+}
+
+U32 getPixelsMinimumDimension(Rgb8bitPngPixels* pngPixels)
+{
+  return pngPixels->width < pngPixels->height ? pngPixels->width : pngPixels->height;
 }

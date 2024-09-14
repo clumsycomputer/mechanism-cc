@@ -36,7 +36,7 @@ U64 calcPixelsDataSize(U32 pixelsWidth, U32 pixelsHeight);
 U64 sizeofRgb8bitPngPixels(U32 pixelsWidth, U32 pixelsHeight);
 void initRgb8bitPngPixels(Rgb8bitPngPixels* pngPixels, U32 pixelsWidth, U32 pixelsHeight);
 Rgb8bitPixelChannels* atPixelsDataPixelChannels(Rgb8bitPngPixels* pngPixels, U32 pixelColumnIndex, U32 pixelRowIndex);
-IEEE64 getPixelsAspectRatio(Rgb8bitPngPixels* pngPixels);
+IEEE64 getPixelsWidthOverHeightAspectRatio(Rgb8bitPngPixels* pngPixels);
 U32 getPixelsMinimumDimension(Rgb8bitPngPixels* pngPixels);
 
 #endif
