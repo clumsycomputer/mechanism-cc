@@ -3,7 +3,7 @@
 
 U64 calcPixelsDataRowSize(U32 pixelsWidth)
 {
-  return ihdrDataPngFilterMethod__Rgb8bitPngEncoding__VALUE_SIZE + pixelsWidth * __Rgb8bitPixelChannels_PNG_PIXELS_SIZE;
+  return ihdrDataPngFilterMethod__Rgb8bitPngEncoding__VALUE_SIZE + pixelsWidth * sizeof(Rgb8bitPixelChannels);
 }
 
 U64 calcPixelsDataSize(U32 pixelsWidth, U32 pixelsHeight)
@@ -44,6 +44,11 @@ void initRgb8bitPngPixels(Rgb8bitPngPixels* pngPixels, U32 pixelsWidth, U32 pixe
 Rgb8bitPixelChannels* atPixelsDataPixelChannels(Rgb8bitPngPixels* pngPixels, U32 pixelColumnIndex, U32 pixelRowIndex)
 {
   U64 pixelsPixelChannelsOffset =
-    pixelRowIndex * pngPixels->__cache.dataRowSize + ihdrDataPngFilterMethod__Rgb8bitPngEncoding__VALUE_SIZE + pixelColumnIndex * __Rgb8bitPixelChannels_PNG_PIXELS_SIZE;
+    pixelRowIndex * pngPixels->__cache.dataRowSize + ihdrDataPngFilterMethod__Rgb8bitPngEncoding__VALUE_SIZE + pixelColumnIndex * sizeof(Rgb8bitPixelChannels);
   return (Rgb8bitPixelChannels*)(pngPixels->data_ptr + pixelsPixelChannelsOffset);
+}
+
+IEEE64 getPixelsAspectRatio(Rgb8bitPngPixels* pngPixels)
+{
+  return (IEEE64)pngPixels->width / pngPixels->height;
 }
