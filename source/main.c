@@ -47,14 +47,14 @@ int main(void)
     getPixelsWidthOverHeightAspectRatio(pngPixels);
   IEEE64 pixelsMinimimumDimension =
     getPixelsMinimumDimension(pngPixels);
-  IEEE64 cartesianHorizontalNormalizedDimensionMagnitude =
+  IEEE64 pixelsNormalizedDimensionMagnitudeHorizontal =
     (IEEE64)pngPixels->width / pixelsMinimimumDimension;
-  IEEE64 cartesianVerticalNormalizedDimensionMagnitude =
+  IEEE64 pixelsNormalizedDimensionMagnitudeVertical =
     (IEEE64)pngPixels->height / pixelsMinimimumDimension;
-  IEEE64 cartesianHorizontalNormalizedDimensionLength =
-    2 * cartesianHorizontalNormalizedDimensionMagnitude;
-  IEEE64 cartesianVerticalNormalizedDimensionLength =
-    2 * cartesianVerticalNormalizedDimensionMagnitude;
+  IEEE64 pixelsNormalizedDimensionLengthHorizontal =
+    2 * pixelsNormalizedDimensionMagnitudeHorizontal;
+  IEEE64 pixelsNormalizedDimensionLengthVertical =
+    2 * pixelsNormalizedDimensionMagnitudeVertical;
   IEEE64 perspectiveFieldOfView = M_PI_2;
   IEEE64 perspectiveNearClippingPlaneDepth = 0.001;
   IEEE64 perspectiveFarClippingPlaneDepth = 4;
@@ -66,7 +66,7 @@ int main(void)
     (perspectiveNearClippingPlaneDepth + perspectiveFarClippingPlaneDepth) / (perspectiveFarClippingPlaneDepth - perspectiveNearClippingPlaneDepth);
   IEEE64 perspectiveDepthHomogeneousScalar =
     2 * perspectiveNearClippingPlaneDepth * perspectiveFarClippingPlaneDepth / (perspectiveFarClippingPlaneDepth - perspectiveNearClippingPlaneDepth);
-  U32 sphereHorizontalVerticalPolarAngleCount = 5;
+  U32 sphereHorizontalVerticalPolarAngleCount = 7;
   IEEE64 sphereHorizontalVerticalPolarAngleStep =
     (2 * M_PI) / sphereHorizontalVerticalPolarAngleCount;
   U32 spherePolarOrthogonalDepthAngleCount = 11;
@@ -101,51 +101,51 @@ int main(void)
         perspectivePointDepth / perspectivePointHomogeneous;
       IEEE64 cartesianCellMagnitude =
         sphereCellMagnitude / perspectivePointHomogeneous;
-      IEEE64 cellLeftPoint =
+      IEEE64 cartesianCellPointLeft =
         cartesianPointHorizontal - cartesianCellMagnitude;
-      IEEE64 cellRightPoint =
+      IEEE64 cartesianCellPointRight =
         cartesianPointHorizontal + cartesianCellMagnitude;
-      IEEE64 cellTopPoint =
+      IEEE64 cartesianCellPointTop =
         cartesianPointVertical - cartesianCellMagnitude;
-      IEEE64 cellBottomPoint =
+      IEEE64 cartesianCellPointBottom =
         cartesianPointVertical + cartesianCellMagnitude;
-      if (cellLeftPoint > cartesianHorizontalNormalizedDimensionMagnitude || cellRightPoint < -cartesianHorizontalNormalizedDimensionMagnitude || cellTopPoint > cartesianVerticalNormalizedDimensionMagnitude || cellBottomPoint < -cartesianVerticalNormalizedDimensionMagnitude)
+      if (cartesianCellPointLeft > pixelsNormalizedDimensionMagnitudeHorizontal || cartesianCellPointRight < -pixelsNormalizedDimensionMagnitudeHorizontal || cartesianCellPointTop > pixelsNormalizedDimensionMagnitudeVertical || cartesianCellPointBottom < -pixelsNormalizedDimensionMagnitudeVertical)
       {
         continue;
       }
-      IEEE64 cellLeftViewPoint =
-        cellLeftPoint < -cartesianHorizontalNormalizedDimensionMagnitude ? -cartesianHorizontalNormalizedDimensionMagnitude : cellLeftPoint;
-      IEEE64 cellRightViewPoint =
-        cellRightPoint > cartesianHorizontalNormalizedDimensionMagnitude ? cartesianHorizontalNormalizedDimensionMagnitude : cellRightPoint;
-      IEEE64 cellTopViewPoint =
-        cellTopPoint < -cartesianVerticalNormalizedDimensionMagnitude ? -cartesianVerticalNormalizedDimensionMagnitude : cellTopPoint;
-      IEEE64 cellBottomViewPoint =
-        cellBottomPoint > cartesianVerticalNormalizedDimensionMagnitude ? cartesianVerticalNormalizedDimensionMagnitude : cellBottomPoint;
-      IEEE64 normalizedCellLeftViewPoint =
-        (cellLeftViewPoint + cartesianHorizontalNormalizedDimensionMagnitude) / cartesianHorizontalNormalizedDimensionLength;
-      IEEE64 normalizedCellRightViewPoint =
-        (cellRightViewPoint + cartesianHorizontalNormalizedDimensionMagnitude) / cartesianHorizontalNormalizedDimensionLength;
-      IEEE64 normalizedCellTopViewPoint =
-        (cellTopViewPoint + cartesianVerticalNormalizedDimensionMagnitude) / cartesianVerticalNormalizedDimensionLength;
-      IEEE64 normalizedCellBottomViewPoint =
-        (cellBottomViewPoint + cartesianVerticalNormalizedDimensionMagnitude) / cartesianVerticalNormalizedDimensionLength;
-      U32 cellLeftColumnIndex =
-        normalizedCellLeftViewPoint * pngPixels->width;
-      U32 cellRightColumnIndex =
-        normalizedCellRightViewPoint * pngPixels->width;
-      U32 cellTopRowIndex =
-        normalizedCellTopViewPoint * pngPixels->height;
-      U32 cellBottomRowIndex =
-        normalizedCellBottomViewPoint * pngPixels->height;
-      for (U32 cellCurrentColumnIndex = cellLeftColumnIndex; cellCurrentColumnIndex <= cellRightColumnIndex; cellCurrentColumnIndex++)
+      IEEE64 visibleCellPointLeft =
+        cartesianCellPointLeft < -pixelsNormalizedDimensionMagnitudeHorizontal ? -pixelsNormalizedDimensionMagnitudeHorizontal : cartesianCellPointLeft;
+      IEEE64 visibleCellPointRight =
+        cartesianCellPointRight > pixelsNormalizedDimensionMagnitudeHorizontal ? pixelsNormalizedDimensionMagnitudeHorizontal : cartesianCellPointRight;
+      IEEE64 visibleCellPointTop =
+        cartesianCellPointTop < -pixelsNormalizedDimensionMagnitudeVertical ? -pixelsNormalizedDimensionMagnitudeVertical : cartesianCellPointTop;
+      IEEE64 visibleCellPointBottom =
+        cartesianCellPointBottom > pixelsNormalizedDimensionMagnitudeVertical ? pixelsNormalizedDimensionMagnitudeVertical : cartesianCellPointBottom;
+      IEEE64 pixelsCellPointLeft =
+        (visibleCellPointLeft + pixelsNormalizedDimensionMagnitudeHorizontal) / pixelsNormalizedDimensionLengthHorizontal;
+      IEEE64 pixelsCellPointRight =
+        (visibleCellPointRight + pixelsNormalizedDimensionMagnitudeHorizontal) / pixelsNormalizedDimensionLengthHorizontal;
+      IEEE64 pixelsCellPointTop =
+        (visibleCellPointTop + pixelsNormalizedDimensionMagnitudeVertical) / pixelsNormalizedDimensionLengthVertical;
+      IEEE64 pixelsCellPointBottom =
+        (visibleCellPointBottom + pixelsNormalizedDimensionMagnitudeVertical) / pixelsNormalizedDimensionLengthVertical;
+      U32 cellPointLeftPixelColumnIndex =
+        pixelsCellPointLeft * pngPixels->width;
+      U32 cellPointRightPixelColumnIndex =
+        pixelsCellPointRight * pngPixels->width;
+      U32 cellPointTopPixelRowIndex =
+        pixelsCellPointTop * pngPixels->height;
+      U32 cellPointBottomPixelRowIndex =
+        pixelsCellPointBottom * pngPixels->height;
+      for (U32 currentCellColumnIndex = cellPointLeftPixelColumnIndex; currentCellColumnIndex <= cellPointRightPixelColumnIndex; currentCellColumnIndex++)
       {
-        for (U32 cellCurrentRowIndex = cellTopRowIndex; cellCurrentRowIndex < cellBottomRowIndex; cellCurrentRowIndex++)
+        for (U32 currentCellRowIndex = cellPointTopPixelRowIndex; currentCellRowIndex < cellPointBottomPixelRowIndex; currentCellRowIndex++)
         {
           currentPixelChannels_ptr =
             atPixelsDataPixelChannels(
               pngPixels,
-              cellCurrentColumnIndex,
-              cellCurrentRowIndex);
+              currentCellColumnIndex,
+              currentCellRowIndex);
           currentPixelChannels_ptr->red = 0;
           currentPixelChannels_ptr->green = 0;
           currentPixelChannels_ptr->blue = 0;
