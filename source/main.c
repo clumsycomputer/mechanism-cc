@@ -7,8 +7,8 @@
 
 int main(void)
 {
-  U32 pixelsWidth = 512;
-  U32 pixelsHeight = 512;
+  U32 pixelsWidth = 129;
+  U32 pixelsHeight = 129;
   U64 pixelsSize =
     sizeofRgb8bitPngPixels(pixelsWidth, pixelsHeight);
   U64 maxEncodingSize =
@@ -45,7 +45,7 @@ int main(void)
   }
   IEEE64 pixelsWidthOverHeightAspectRatio =
     getPixelsWidthOverHeightAspectRatio(pngPixels);
-  IEEE64 pixelsMinimimumDimension =
+  U32 pixelsMinimimumDimension =
     getPixelsMinimumDimension(pngPixels);
   IEEE64 pixelsNormalizedDimensionMagnitudeHorizontal =
     (IEEE64)pngPixels->width / pixelsMinimimumDimension;
@@ -65,7 +65,7 @@ int main(void)
   // IEEE64 cameraUpOrientationVertical = -1todo;
   // IEEE64 cameraUpOrientationDepth = -1todo;
   IEEE64 perspectiveFieldOfView = M_PI_2;
-  IEEE64 perspectiveNearClippingPlaneDepth = 0.001;
+  IEEE64 perspectiveNearClippingPlaneDepth = 0.01;
   IEEE64 perspectiveFarClippingPlaneDepth = 4;
   IEEE64 perspectiveHorizontalHorizontalScalar =
     1 / (pixelsWidthOverHeightAspectRatio * tan(perspectiveFieldOfView / 2));
@@ -82,24 +82,24 @@ int main(void)
   IEEE64 spherePolarOrthogonalDepthAngleStep =
     M_PI / spherePolarOrthogonalDepthAngleCount;
   IEEE64 sphereOriginDepth = 2;
-  IEEE64 sphereRadius = 1.5;
-  IEEE64 sphereCellMagnitude = 0.01;
-  for (IEEE64 currentSphereHorizontalVerticalPolarAngle = 0; currentSphereHorizontalVerticalPolarAngle < (M_PI * 2); currentSphereHorizontalVerticalPolarAngle += sphereHorizontalVerticalPolarAngleStep)
+  IEEE64 sphereRadius = 2;
+  IEEE64 sphereCellMagnitude = 0.1;
+  for (IEEE64 currentSphereHorizontalVerticalPolarAngle = M_PI_2; currentSphereHorizontalVerticalPolarAngle < (2 * M_PI + M_PI_2); currentSphereHorizontalVerticalPolarAngle += sphereHorizontalVerticalPolarAngleStep)
   {
-    for (IEEE64 currentSpherePolarOrthogonalDepthAngle = -M_PI_2; currentSpherePolarOrthogonalDepthAngle <= M_PI_2; currentSpherePolarOrthogonalDepthAngle += spherePolarOrthogonalDepthAngleStep)
+    for (IEEE64 currentSpherePolarOrthogonalDepthAngle= 0; currentSpherePolarOrthogonalDepthAngle <= M_PI; currentSpherePolarOrthogonalDepthAngle += spherePolarOrthogonalDepthAngleStep)
     {
       IEEE64 spherePointHorizontal =
-        sphereRadius * sin(currentSpherePolarOrthogonalDepthAngle - M_PI_2) * cos(currentSphereHorizontalVerticalPolarAngle + M_PI_2);
+        sphereRadius * sin(currentSpherePolarOrthogonalDepthAngle) * cos(currentSphereHorizontalVerticalPolarAngle);
       IEEE64 spherePointVertical =
-        sphereRadius * sin(currentSpherePolarOrthogonalDepthAngle - M_PI_2) * sin(currentSphereHorizontalVerticalPolarAngle + M_PI_2);
+        sphereRadius * sin(currentSpherePolarOrthogonalDepthAngle) * sin(currentSphereHorizontalVerticalPolarAngle);
       IEEE64 spherePointDepth =
-        sphereRadius * cos(currentSpherePolarOrthogonalDepthAngle - M_PI_2) + sphereOriginDepth;
+        sphereRadius * cos(currentSpherePolarOrthogonalDepthAngle) + sphereOriginDepth;
       IEEE64 perspectivePointHorizontal =
         spherePointHorizontal * perspectiveHorizontalHorizontalScalar;
       IEEE64 perspectivePointVertical =
         spherePointVertical * perspectiveVerticalVerticalScalar;
       IEEE64 perspectivePointDepth =
-        spherePointDepth * perspectiveDepthDepthScalar + 0 * perspectiveDepthHomogeneousScalar;
+        spherePointDepth * perspectiveDepthDepthScalar + 1 * perspectiveDepthHomogeneousScalar;
       IEEE64 perspectivePointHomogeneous =
         spherePointDepth;
       IEEE64 cartesianPointHorizontal =
@@ -110,37 +110,45 @@ int main(void)
         perspectivePointDepth / perspectivePointHomogeneous;
       IEEE64 cartesianCellMagnitude =
         sphereCellMagnitude / perspectivePointHomogeneous;
-      if (cartesianPointHorizontal > pixelsNormalizedDimensionMagnitudeHorizontal || cartesianPointHorizontal < -pixelsNormalizedDimensionMagnitudeHorizontal || cartesianPointHorizontal > pixelsNormalizedDimensionMagnitudeVertical || cartesianPointHorizontal < -pixelsNormalizedDimensionMagnitudeVertical)
-      {
-        continue;
-      }
       IEEE64 pixelsCellPointHorizontal =
         (cartesianPointHorizontal + pixelsNormalizedDimensionMagnitudeHorizontal) / pixelsNormalizedDimensionLengthHorizontal;
       IEEE64 pixelsCellPointVertical =
         (cartesianPointVertical + pixelsNormalizedDimensionMagnitudeVertical) / pixelsNormalizedDimensionLengthVertical;
-      IEEE64 cellCenterPixelColumnIndex =
-        pixelsCellPointHorizontal * pngPixels->width;
-      IEEE64 cellCenterPixelRowIndex =
-        pixelsCellPointVertical * pngPixels->height;
-      U32 cellPixelMagnitude =
-        ceil(cartesianCellMagnitude * pixelsMinimimumDimension);
-      for (U32 currentCellRingIndex = 0; currentCellRingIndex < cellPixelMagnitude; currentCellRingIndex++)
+      S32 cellCenterPixelColumnIndex =
+        pixelsCellPointHorizontal * (S32)pngPixels->width;
+      S32 cellCenterPixelRowIndex =
+        pixelsCellPointVertical * (S32)pngPixels->height;        
+      S32 cellPixelMagnitude =
+        ceil(cartesianCellMagnitude * pixelsMinimimumDimension);        
+      S32 cellPixelColumnIndexMinimum =
+        cellCenterPixelColumnIndex - cellPixelMagnitude;
+      cellPixelColumnIndexMinimum =
+        cellPixelColumnIndexMinimum < 0 ? 0 : cellPixelColumnIndexMinimum;
+      S32 cellPixelColumnIndexMaximum =
+        cellCenterPixelColumnIndex + cellPixelMagnitude;
+      cellPixelColumnIndexMaximum =
+        cellPixelColumnIndexMaximum < (S32)pngPixels->width ? cellPixelColumnIndexMaximum : (S32)pngPixels->width - 1;
+      S32 cellPixelRowIndexMinimum =
+        cellCenterPixelRowIndex - cellPixelMagnitude;
+      cellPixelRowIndexMinimum =
+        cellPixelRowIndexMinimum < 0 ? 0 : cellPixelRowIndexMinimum;
+      S32 cellPixelRowIndexMaximum =
+        cellCenterPixelRowIndex + cellPixelMagnitude;
+      cellPixelRowIndexMaximum =
+        cellPixelRowIndexMaximum < (S32)pngPixels->height ? cellPixelRowIndexMaximum : (S32)(pngPixels->height - 1);
+      printf("%f %f %f %f %d %d %d %d %d %d %d\n", spherePointHorizontal, spherePointVertical, pixelsCellPointHorizontal, pixelsCellPointVertical, cellCenterPixelColumnIndex, cellCenterPixelRowIndex, cellPixelMagnitude, cellPixelColumnIndexMinimum, cellPixelColumnIndexMaximum, cellPixelRowIndexMinimum, cellPixelRowIndexMaximum);
+      for (S32 currentCellPixelColumnIndex = cellPixelColumnIndexMinimum; currentCellPixelColumnIndex <= cellPixelColumnIndexMaximum; currentCellPixelColumnIndex++)
       {
-        for (U32 currentCellPixelColumnIndex = (cellCenterPixelColumnIndex - currentCellRingIndex); currentCellPixelColumnIndex <= (cellCenterPixelColumnIndex + currentCellRingIndex); currentCellPixelColumnIndex++)
+        for (S32 currentCellPixelRowIndex = cellPixelRowIndexMinimum; currentCellPixelRowIndex <= cellPixelRowIndexMaximum; currentCellPixelRowIndex++)
         {
-          if (currentCellPixelColumnIndex < 0 || currentCellPixelColumnIndex >= pngPixels->width) { continue; }
-          for (U32 currentCellPixelRowIndex = (cellCenterPixelRowIndex - currentCellRingIndex); currentCellPixelRowIndex <= (cellCenterPixelRowIndex + currentCellRingIndex); currentCellPixelRowIndex++)
-          {
-            if (currentCellPixelRowIndex < 0 || currentCellPixelRowIndex >= pngPixels->height) { continue; }
-            currentPixelChannels_ptr =
-              atPixelsDataPixelChannels(
-                pngPixels,
-                currentCellPixelColumnIndex,
-                currentCellPixelRowIndex);
-            currentPixelChannels_ptr->red = 0;
-            currentPixelChannels_ptr->green = 0;
-            currentPixelChannels_ptr->blue = 0;
-          }
+          currentPixelChannels_ptr =
+            atPixelsDataPixelChannels(
+              pngPixels,
+              currentCellPixelColumnIndex,
+              currentCellPixelRowIndex);
+          currentPixelChannels_ptr->red = 0;
+          currentPixelChannels_ptr->green = 0;
+          currentPixelChannels_ptr->blue = 0;
         }
       }
     }
