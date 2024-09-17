@@ -7,8 +7,8 @@
 
 int main(void)
 {
-  U32 pixelsWidth = 2048;
-  U32 pixelsHeight = 2048;
+  U32 pixelsWidth = 512;
+  U32 pixelsHeight = 512;
   U64 pixelsSize =
     sizeofRgb8bitPngPixels(pixelsWidth, pixelsHeight);
   U64 maxEncodingSize =
@@ -55,6 +55,15 @@ int main(void)
     2 * pixelsNormalizedDimensionMagnitudeHorizontal;
   IEEE64 pixelsNormalizedDimensionLengthVertical =
     2 * pixelsNormalizedDimensionMagnitudeVertical;
+  // IEEE64 cameraPositionHorizontal = 0;
+  // IEEE64 cameraPositionVertical = 0;
+  // IEEE64 cameraPositionDepth = 0;
+  // IEEE64 cameraTargetHorizontal = 0;
+  // IEEE64 cameraTargetVertical = 0;
+  // IEEE64 cameraTargetDepth = 0;
+  // IEEE64 cameraUpOrientationHorizontal = -1todo;
+  // IEEE64 cameraUpOrientationVertical = -1todo;
+  // IEEE64 cameraUpOrientationDepth = -1todo;
   IEEE64 perspectiveFieldOfView = M_PI_2;
   IEEE64 perspectiveNearClippingPlaneDepth = 0.001;
   IEEE64 perspectiveFarClippingPlaneDepth = 4;
@@ -73,7 +82,7 @@ int main(void)
   IEEE64 spherePolarOrthogonalDepthAngleStep =
     M_PI / spherePolarOrthogonalDepthAngleCount;
   IEEE64 sphereOriginDepth = 2;
-  IEEE64 sphereRadius = 0.9;
+  IEEE64 sphereRadius = 1.5;
   IEEE64 sphereCellMagnitude = 0.01;
   for (IEEE64 currentSphereHorizontalVerticalPolarAngle = 0; currentSphereHorizontalVerticalPolarAngle < (M_PI * 2); currentSphereHorizontalVerticalPolarAngle += sphereHorizontalVerticalPolarAngleStep)
   {
@@ -101,54 +110,37 @@ int main(void)
         perspectivePointDepth / perspectivePointHomogeneous;
       IEEE64 cartesianCellMagnitude =
         sphereCellMagnitude / perspectivePointHomogeneous;
-      IEEE64 cartesianCellPointLeft =
-        cartesianPointHorizontal - cartesianCellMagnitude;
-      IEEE64 cartesianCellPointRight =
-        cartesianPointHorizontal + cartesianCellMagnitude;
-      IEEE64 cartesianCellPointTop =
-        cartesianPointVertical - cartesianCellMagnitude;
-      IEEE64 cartesianCellPointBottom =
-        cartesianPointVertical + cartesianCellMagnitude;
-      if (cartesianCellPointLeft > pixelsNormalizedDimensionMagnitudeHorizontal || cartesianCellPointRight < -pixelsNormalizedDimensionMagnitudeHorizontal || cartesianCellPointTop > pixelsNormalizedDimensionMagnitudeVertical || cartesianCellPointBottom < -pixelsNormalizedDimensionMagnitudeVertical)
+      if (cartesianPointHorizontal > pixelsNormalizedDimensionMagnitudeHorizontal || cartesianPointHorizontal < -pixelsNormalizedDimensionMagnitudeHorizontal || cartesianPointHorizontal > pixelsNormalizedDimensionMagnitudeVertical || cartesianPointHorizontal < -pixelsNormalizedDimensionMagnitudeVertical)
       {
         continue;
       }
-      IEEE64 visibleCellPointLeft =
-        cartesianCellPointLeft < -pixelsNormalizedDimensionMagnitudeHorizontal ? -pixelsNormalizedDimensionMagnitudeHorizontal : cartesianCellPointLeft;
-      IEEE64 visibleCellPointRight =
-        cartesianCellPointRight > pixelsNormalizedDimensionMagnitudeHorizontal ? pixelsNormalizedDimensionMagnitudeHorizontal : cartesianCellPointRight;
-      IEEE64 visibleCellPointTop =
-        cartesianCellPointTop < -pixelsNormalizedDimensionMagnitudeVertical ? -pixelsNormalizedDimensionMagnitudeVertical : cartesianCellPointTop;
-      IEEE64 visibleCellPointBottom =
-        cartesianCellPointBottom > pixelsNormalizedDimensionMagnitudeVertical ? pixelsNormalizedDimensionMagnitudeVertical : cartesianCellPointBottom;
-      IEEE64 pixelsCellPointLeft =
-        (visibleCellPointLeft + pixelsNormalizedDimensionMagnitudeHorizontal) / pixelsNormalizedDimensionLengthHorizontal;
-      IEEE64 pixelsCellPointRight =
-        (visibleCellPointRight + pixelsNormalizedDimensionMagnitudeHorizontal) / pixelsNormalizedDimensionLengthHorizontal;
-      IEEE64 pixelsCellPointTop =
-        (visibleCellPointTop + pixelsNormalizedDimensionMagnitudeVertical) / pixelsNormalizedDimensionLengthVertical;
-      IEEE64 pixelsCellPointBottom =
-        (visibleCellPointBottom + pixelsNormalizedDimensionMagnitudeVertical) / pixelsNormalizedDimensionLengthVertical;
-      U32 cellPointLeftPixelColumnIndex =
-        pixelsCellPointLeft * pngPixels->width;
-      U32 cellPointRightPixelColumnIndex =
-        pixelsCellPointRight * pngPixels->width;
-      U32 cellPointTopPixelRowIndex =
-        pixelsCellPointTop * pngPixels->height;
-      U32 cellPointBottomPixelRowIndex =
-        pixelsCellPointBottom * pngPixels->height;
-      for (U32 currentCellColumnIndex = cellPointLeftPixelColumnIndex; currentCellColumnIndex <= cellPointRightPixelColumnIndex; currentCellColumnIndex++)
+      IEEE64 pixelsCellPointHorizontal =
+        (cartesianPointHorizontal + pixelsNormalizedDimensionMagnitudeHorizontal) / pixelsNormalizedDimensionLengthHorizontal;
+      IEEE64 pixelsCellPointVertical =
+        (cartesianPointVertical + pixelsNormalizedDimensionMagnitudeVertical) / pixelsNormalizedDimensionLengthVertical;
+      IEEE64 cellCenterPixelColumnIndex =
+        pixelsCellPointHorizontal * pngPixels->width;
+      IEEE64 cellCenterPixelRowIndex =
+        pixelsCellPointVertical * pngPixels->height;
+      U32 cellPixelMagnitude =
+        ceil(cartesianCellMagnitude * pixelsMinimimumDimension);
+      for (U32 currentCellRingIndex = 0; currentCellRingIndex < cellPixelMagnitude; currentCellRingIndex++)
       {
-        for (U32 currentCellRowIndex = cellPointTopPixelRowIndex; currentCellRowIndex < cellPointBottomPixelRowIndex; currentCellRowIndex++)
+        for (U32 currentCellPixelColumnIndex = (cellCenterPixelColumnIndex - currentCellRingIndex); currentCellPixelColumnIndex <= (cellCenterPixelColumnIndex + currentCellRingIndex); currentCellPixelColumnIndex++)
         {
-          currentPixelChannels_ptr =
-            atPixelsDataPixelChannels(
-              pngPixels,
-              currentCellColumnIndex,
-              currentCellRowIndex);
-          currentPixelChannels_ptr->red = 0;
-          currentPixelChannels_ptr->green = 0;
-          currentPixelChannels_ptr->blue = 0;
+          if (currentCellPixelColumnIndex < 0 || currentCellPixelColumnIndex >= pngPixels->width) { continue; }
+          for (U32 currentCellPixelRowIndex = (cellCenterPixelRowIndex - currentCellRingIndex); currentCellPixelRowIndex <= (cellCenterPixelRowIndex + currentCellRingIndex); currentCellPixelRowIndex++)
+          {
+            if (currentCellPixelRowIndex < 0 || currentCellPixelRowIndex >= pngPixels->height) { continue; }
+            currentPixelChannels_ptr =
+              atPixelsDataPixelChannels(
+                pngPixels,
+                currentCellPixelColumnIndex,
+                currentCellPixelRowIndex);
+            currentPixelChannels_ptr->red = 0;
+            currentPixelChannels_ptr->green = 0;
+            currentPixelChannels_ptr->blue = 0;
+          }
         }
       }
     }
