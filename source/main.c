@@ -7,8 +7,8 @@
 
 int main(void)
 {
-  U32 pixelsWidth = 129;
-  U32 pixelsHeight = 129;
+  U32 pixelsWidth = 49;
+  U32 pixelsHeight = 49;
   U64 pixelsSize =
     sizeofRgb8bitPngPixels(pixelsWidth, pixelsHeight);
   U64 maxEncodingSize =
@@ -45,7 +45,7 @@ int main(void)
   }
   IEEE64 pixelsWidthOverHeightAspectRatio =
     getPixelsWidthOverHeightAspectRatio(pngPixels);
-  U32 pixelsMinimimumDimension =
+  S32 pixelsMinimimumDimension =
     getPixelsMinimumDimension(pngPixels);
   IEEE64 pixelsNormalizedDimensionMagnitudeHorizontal =
     (IEEE64)pngPixels->width / pixelsMinimimumDimension;
@@ -75,10 +75,10 @@ int main(void)
     (perspectiveNearClippingPlaneDepth + perspectiveFarClippingPlaneDepth) / (perspectiveFarClippingPlaneDepth - perspectiveNearClippingPlaneDepth);
   IEEE64 perspectiveDepthHomogeneousScalar =
     2 * perspectiveNearClippingPlaneDepth * perspectiveFarClippingPlaneDepth / (perspectiveFarClippingPlaneDepth - perspectiveNearClippingPlaneDepth);
-  U32 sphereHorizontalVerticalPolarAngleCount = 7;
+  S32 sphereHorizontalVerticalPolarAngleCount = 7;
   IEEE64 sphereHorizontalVerticalPolarAngleStep =
     (2 * M_PI) / sphereHorizontalVerticalPolarAngleCount;
-  U32 spherePolarOrthogonalDepthAngleCount = 11;
+  S32 spherePolarOrthogonalDepthAngleCount = 11;
   IEEE64 spherePolarOrthogonalDepthAngleStep =
     M_PI / spherePolarOrthogonalDepthAngleCount;
   IEEE64 sphereOriginDepth = 2;
@@ -86,7 +86,7 @@ int main(void)
   IEEE64 sphereCellMagnitude = 0.1;
   for (IEEE64 currentSphereHorizontalVerticalPolarAngle = M_PI_2; currentSphereHorizontalVerticalPolarAngle < (2 * M_PI + M_PI_2); currentSphereHorizontalVerticalPolarAngle += sphereHorizontalVerticalPolarAngleStep)
   {
-    for (IEEE64 currentSpherePolarOrthogonalDepthAngle= 0; currentSpherePolarOrthogonalDepthAngle <= M_PI; currentSpherePolarOrthogonalDepthAngle += spherePolarOrthogonalDepthAngleStep)
+    for (IEEE64 currentSpherePolarOrthogonalDepthAngle = 0; currentSpherePolarOrthogonalDepthAngle <= M_PI; currentSpherePolarOrthogonalDepthAngle += spherePolarOrthogonalDepthAngleStep)
     {
       IEEE64 spherePointHorizontal =
         sphereRadius * sin(currentSpherePolarOrthogonalDepthAngle) * cos(currentSphereHorizontalVerticalPolarAngle);
@@ -117,9 +117,13 @@ int main(void)
       S32 cellCenterPixelColumnIndex =
         pixelsCellPointHorizontal * (S32)pngPixels->width;
       S32 cellCenterPixelRowIndex =
-        pixelsCellPointVertical * (S32)pngPixels->height;        
+        pixelsCellPointVertical * (S32)pngPixels->height;
+      if (cellCenterPixelColumnIndex < 0 || cellCenterPixelRowIndex >= (S32)pngPixels->width || cellCenterPixelColumnIndex < 0 || cellCenterPixelColumnIndex >= (S32)pngPixels->height)
+      {
+        continue;
+      }
       S32 cellPixelMagnitude =
-        ceil(cartesianCellMagnitude * pixelsMinimimumDimension);        
+        ceil(cartesianCellMagnitude * pixelsMinimimumDimension);
       S32 cellPixelColumnIndexMinimum =
         cellCenterPixelColumnIndex - cellPixelMagnitude;
       cellPixelColumnIndexMinimum =
@@ -135,8 +139,7 @@ int main(void)
       S32 cellPixelRowIndexMaximum =
         cellCenterPixelRowIndex + cellPixelMagnitude;
       cellPixelRowIndexMaximum =
-        cellPixelRowIndexMaximum < (S32)pngPixels->height ? cellPixelRowIndexMaximum : (S32)(pngPixels->height - 1);
-      printf("%f %f %f %f %d %d %d %d %d %d %d\n", spherePointHorizontal, spherePointVertical, pixelsCellPointHorizontal, pixelsCellPointVertical, cellCenterPixelColumnIndex, cellCenterPixelRowIndex, cellPixelMagnitude, cellPixelColumnIndexMinimum, cellPixelColumnIndexMaximum, cellPixelRowIndexMinimum, cellPixelRowIndexMaximum);
+        cellPixelRowIndexMaximum < (S32)pngPixels->height ? cellPixelRowIndexMaximum : (S32)pngPixels->height - 1;
       for (S32 currentCellPixelColumnIndex = cellPixelColumnIndexMinimum; currentCellPixelColumnIndex <= cellPixelColumnIndexMaximum; currentCellPixelColumnIndex++)
       {
         for (S32 currentCellPixelRowIndex = cellPixelRowIndexMinimum; currentCellPixelRowIndex <= cellPixelRowIndexMaximum; currentCellPixelRowIndex++)
