@@ -78,7 +78,7 @@ int main(void)
   S32 sphereHorizontalVerticalPolarAngleCount = 7;
   IEEE64 sphereHorizontalVerticalPolarAngleStep =
     (2 * M_PI) / sphereHorizontalVerticalPolarAngleCount;
-  S32 spherePolarOrthogonalDepthAngleCount = 11;
+  S32 spherePolarOrthogonalDepthAngleCount = 7;
   IEEE64 spherePolarOrthogonalDepthAngleStep =
     M_PI / spherePolarOrthogonalDepthAngleCount;
   IEEE64 sphereOriginDepth = 2;
