@@ -58,10 +58,10 @@ int main(void)
     2 * pixelsNormalizedDimensionMagnitudeVertical;
   IEEE64 cameraPositionHorizontal = 0;
   IEEE64 cameraPositionVertical = 0;
-  IEEE64 cameraPositionDepth = -2;
+  IEEE64 cameraPositionDepth = 0;
   IEEE64 cameraTargetHorizontal = 0;
   IEEE64 cameraTargetVertical = 0;
-  IEEE64 cameraTargetDepth = 0;
+  IEEE64 cameraTargetDepth = 2;
   IEEE64 cameraUpOrientationHorizontal = 0;
   IEEE64 cameraUpOrientationVertical = 1;
   IEEE64 cameraUpOrientationDepth = 0;
@@ -151,6 +151,30 @@ int main(void)
     (perspectiveNearClippingPlaneDepth + perspectiveFarClippingPlaneDepth) / (perspectiveFarClippingPlaneDepth - perspectiveNearClippingPlaneDepth);
   IEEE64 perspectiveDepthRowHomogeneousColumnScalar =
     2 * perspectiveNearClippingPlaneDepth * perspectiveFarClippingPlaneDepth / (perspectiveFarClippingPlaneDepth - perspectiveNearClippingPlaneDepth);
+  IEEE64 cameraHomogeneousRowHorizontalColumnScalar =
+    -calcVector3DotProduct(
+      cameraNormalRightHorizontal,
+      cameraNormalRightVertical,
+      cameraNormalRightDepth,
+      cameraPositionHorizontal,
+      cameraPositionVertical,
+      cameraPositionDepth);
+  IEEE64 cameraHomogeneousRowVerticalColumnScalar =
+    -calcVector3DotProduct(
+      cameraNormalAdjustedUpHorizontal,
+      cameraNormalAdjustedUpVertical,
+      cameraNormalAdjustedUpDepth,
+      cameraPositionHorizontal,
+      cameraPositionVertical,
+      cameraPositionDepth);
+  IEEE64 cameraHomogeneousRowDepthColumnScalar =
+    calcVector3DotProduct(
+      -cameraNormalForwardHorizontal,
+      -cameraNormalForwardVertical,
+      -cameraNormalForwardDepth,
+      cameraPositionHorizontal,
+      cameraPositionVertical,
+      cameraPositionDepth);
   IEEE64 transformHorizontalHorizontalColumnScalar =
     calcMatrix4Element(
       perspectiveHorizontalRowHorizontalColumnScalar,
@@ -160,36 +184,164 @@ int main(void)
       cameraNormalRightHorizontal,
       cameraNormalRightVertical,
       cameraNormalRightDepth,
-      -calcVector3DotProduct(
-        cameraNormalRightHorizontal,
-        cameraNormalRightVertical,
-        cameraNormalRightDepth,
-        cameraPositionHorizontal,
-        cameraPositionVertical,
-        cameraPositionDepth));
+      cameraHomogeneousRowHorizontalColumnScalar);
   IEEE64 transformHorizontalVerticalColumnScalar =
     calcMatrix4Element(
       perspectiveHorizontalRowHorizontalColumnScalar,
       0,
       0,
       0,
+      cameraNormalAdjustedUpHorizontal,
+      cameraNormalAdjustedUpVertical,
+      cameraNormalAdjustedUpDepth,
+      cameraHomogeneousRowVerticalColumnScalar);
+  IEEE64 transformHorizontalDepthColumnScalar =
+    calcMatrix4Element(
+      perspectiveHorizontalRowHorizontalColumnScalar,
+      0,
+      0,
+      0,
+      -cameraNormalForwardHorizontal,
+      -cameraNormalForwardVertical,
+      -cameraNormalForwardDepth,
+      cameraHomogeneousRowDepthColumnScalar);
+  IEEE64 transformHorizontalHomogeneousColumnScalar =
+    calcMatrix4Element(
+      perspectiveHorizontalRowHorizontalColumnScalar,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1);
+  IEEE64 transformVerticalHorizontalColumnScalar =
+    calcMatrix4Element(
+      0,
+      perspectiveVerticalRowVerticalColumnScalar,
+      0,
+      0,
       cameraNormalRightHorizontal,
       cameraNormalRightVertical,
       cameraNormalRightDepth,
-      -calcVector3DotProduct(
-        cameraNormalRightHorizontal,
-        cameraNormalRightVertical,
-        cameraNormalRightDepth,
-        cameraPositionHorizontal,
-        cameraPositionVertical,
-        cameraPositionDepth));
+      cameraHomogeneousRowHorizontalColumnScalar);
+  IEEE64 transformVerticalVerticalColumnScalar =
+    calcMatrix4Element(
+      0,
+      perspectiveVerticalRowVerticalColumnScalar,
+      0,
+      0,
+      cameraNormalAdjustedUpHorizontal,
+      cameraNormalAdjustedUpVertical,
+      cameraNormalAdjustedUpDepth,
+      cameraHomogeneousRowVerticalColumnScalar);
+  IEEE64 transformVerticalDepthColumnScalar =
+    calcMatrix4Element(
+      0,
+      perspectiveVerticalRowVerticalColumnScalar,
+      0,
+      0,
+      -cameraNormalForwardHorizontal,
+      -cameraNormalForwardVertical,
+      -cameraNormalForwardDepth,
+      cameraHomogeneousRowDepthColumnScalar);
+  IEEE64 transformVerticalHomogeneousColumnScalar =
+    calcMatrix4Element(
+      0,
+      perspectiveVerticalRowVerticalColumnScalar,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1);
+  IEEE64 transformDepthHorizontalColumnScalar =
+    calcMatrix4Element(
+      0,
+      0,
+      perspectiveDepthRowDepthColumnScalar,
+      perspectiveDepthRowHomogeneousColumnScalar,
+      cameraNormalRightHorizontal,
+      cameraNormalRightVertical,
+      cameraNormalRightDepth,
+      cameraHomogeneousRowHorizontalColumnScalar);
+  IEEE64 transformDepthVerticalColumnScalar =
+    calcMatrix4Element(
+      0,
+      0,
+      perspectiveDepthRowDepthColumnScalar,
+      perspectiveDepthRowHomogeneousColumnScalar,
+      cameraNormalAdjustedUpHorizontal,
+      cameraNormalAdjustedUpVertical,
+      cameraNormalAdjustedUpDepth,
+      cameraHomogeneousRowVerticalColumnScalar);
+  IEEE64 transformDepthDepthColumnScalar =
+    calcMatrix4Element(
+      0,
+      0,
+      perspectiveDepthRowDepthColumnScalar,
+      perspectiveDepthRowHomogeneousColumnScalar,
+      -cameraNormalForwardHorizontal,
+      -cameraNormalForwardVertical,
+      -cameraNormalForwardDepth,
+      cameraHomogeneousRowDepthColumnScalar);
+  IEEE64 transformDepthHomogeneousColumnScalar =
+    calcMatrix4Element(
+      0,
+      0,
+      perspectiveDepthRowDepthColumnScalar,
+      perspectiveDepthRowHomogeneousColumnScalar,
+      0,
+      0,
+      0,
+      1);
+  IEEE64 transformHomogeneousHorizontalColumnScalar =
+    calcMatrix4Element(
+      0,
+      0,
+      1,
+      0,
+      cameraNormalRightHorizontal,
+      cameraNormalRightVertical,
+      cameraNormalRightDepth,
+      cameraHomogeneousRowHorizontalColumnScalar);
+  IEEE64 transformHomogeneousVerticalColumnScalar =
+    calcMatrix4Element(
+      0,
+      0,
+      1,
+      0,
+      cameraNormalAdjustedUpHorizontal,
+      cameraNormalAdjustedUpVertical,
+      cameraNormalAdjustedUpDepth,
+      cameraHomogeneousRowVerticalColumnScalar);
+  IEEE64 transformHomogeneousDepthColumnScalar =
+    calcMatrix4Element(
+      0,
+      0,
+      1,
+      0,
+      -cameraNormalForwardHorizontal,
+      -cameraNormalForwardVertical,
+      -cameraNormalForwardDepth,
+      cameraHomogeneousRowDepthColumnScalar);
+  IEEE64 transformHomogeneousHomogeneousColumnScalar =
+    calcMatrix4Element(
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1);
   S32 sphereHorizontalVerticalPolarAngleCount = 7;
   IEEE64 sphereHorizontalVerticalPolarAngleStep =
     (2 * M_PI) / sphereHorizontalVerticalPolarAngleCount;
   S32 spherePolarOrthogonalDepthAngleCount = 7;
   IEEE64 spherePolarOrthogonalDepthAngleStep =
     M_PI / spherePolarOrthogonalDepthAngleCount;
-  IEEE64 sphereOriginDepth = 0;
+  IEEE64 sphereOriginDepth = 2;
   IEEE64 sphereRadius = 2;
   IEEE64 sphereCellMagnitude = 0.1;
   for (IEEE64 currentSphereHorizontalVerticalPolarAngle = M_PI_2; currentSphereHorizontalVerticalPolarAngle < (2 * M_PI + M_PI_2); currentSphereHorizontalVerticalPolarAngle += sphereHorizontalVerticalPolarAngleStep)
@@ -202,14 +354,51 @@ int main(void)
         sphereRadius * sin(currentSpherePolarOrthogonalDepthAngle) * sin(currentSphereHorizontalVerticalPolarAngle);
       IEEE64 spherePointDepth =
         sphereRadius * cos(currentSpherePolarOrthogonalDepthAngle) + sphereOriginDepth;
+      IEEE64 spherePointHomogeneous = 1;
       IEEE64 perspectivePointHorizontal =
-        spherePointHorizontal * perspectiveHorizontalRowHorizontalColumnScalar;
+        calcVector4DotProduct(
+          transformHorizontalHorizontalColumnScalar,
+          transformHorizontalVerticalColumnScalar,
+          transformHorizontalDepthColumnScalar,
+          transformHorizontalHomogeneousColumnScalar,
+          spherePointHorizontal,
+          spherePointVertical,
+          spherePointDepth,
+          spherePointHomogeneous);
+      // spherePointHorizontal * transformHorizontalHorizontalColumnScalar + spherePointVertical;
       IEEE64 perspectivePointVertical =
-        spherePointVertical * perspectiveVerticalRowVerticalColumnScalar;
+        calcVector4DotProduct(
+          transformVerticalHorizontalColumnScalar,
+          transformVerticalVerticalColumnScalar,
+          transformVerticalDepthColumnScalar,
+          transformVerticalHomogeneousColumnScalar,
+          spherePointHorizontal,
+          spherePointVertical,
+          spherePointDepth,
+          spherePointHomogeneous);
+      // spherePointVertical * perspectiveVerticalRowVerticalColumnScalar;
       IEEE64 perspectivePointDepth =
-        spherePointDepth * perspectiveDepthRowDepthColumnScalar + 1 * perspectiveDepthRowHomogeneousColumnScalar;
+        calcVector4DotProduct(
+          transformDepthHorizontalColumnScalar,
+          transformDepthVerticalColumnScalar,
+          transformDepthDepthColumnScalar,
+          transformDepthHomogeneousColumnScalar,
+          spherePointHorizontal,
+          spherePointVertical,
+          spherePointDepth,
+          spherePointHomogeneous);
+      // spherePointDepth * perspectiveDepthRowDepthColumnScalar + 1 * perspectiveDepthRowHomogeneousColumnScalar;
       IEEE64 perspectivePointHomogeneous =
-        spherePointDepth;
+        calcVector4DotProduct(
+          transformHomogeneousHorizontalColumnScalar,
+          transformHomogeneousVerticalColumnScalar,
+          transformHomogeneousDepthColumnScalar,
+          transformHomogeneousHomogeneousColumnScalar,
+          spherePointHorizontal,
+          spherePointVertical,
+          spherePointDepth,
+          spherePointHomogeneous);
+      // spherePointDepth;
       IEEE64 cartesianPointHorizontal =
         perspectivePointHorizontal / perspectivePointHomogeneous;
       IEEE64 cartesianPointVertical =

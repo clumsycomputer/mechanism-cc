@@ -27,6 +27,11 @@ IEEE64 calcVector3DotProduct(IEEE64 lhsVectorHorizontal, IEEE64 lhsVectorVertica
   return lhsVectorHorizontal * rhsVectorHorizontal + lhsVectorVertical * rhsVectorVertical + lhsVectorDepth * rhsVectorDepth;
 }
 
+IEEE64 calcVector4DotProduct(IEEE64 lhsVectorHorizontal, IEEE64 lhsVectorVertical, IEEE64 lhsVectorDepth, IEEE64 lhsVectorHomogeneous, IEEE64 rhsVectorHorizontal, IEEE64 rhsVectorVertical, IEEE64 rhsVectorDepth, IEEE64 rhsVectorHomogeneous)
+{
+  return lhsVectorHorizontal * rhsVectorHorizontal + lhsVectorVertical * rhsVectorVertical + lhsVectorDepth * rhsVectorDepth + lhsVectorHomogeneous * rhsVectorHomogeneous;
+}
+
 IEEE64 calcMatrix4Element(IEEE64 lhsRowHorizontalColumn, IEEE64 lhsRowVerticalColumn, IEEE64 lhsRowDepthColumn, IEEE64 lhsRowHomogeneousColumn, IEEE64 rhsColumnRowZero, IEEE64 rhsColumnRowOne, IEEE64 rhsColumnRowTwo, IEEE64 rhsColumnRowThree)
 {
   return lhsRowHorizontalColumn * rhsColumnRowZero + lhsRowVerticalColumn * rhsColumnRowOne + lhsRowDepthColumn * rhsColumnRowTwo + lhsRowHomogeneousColumn * rhsColumnRowThree;
