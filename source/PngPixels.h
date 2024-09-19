@@ -39,4 +39,4 @@ Rgb8bitPixelChannels* atPixelsDataPixelChannels(Rgb8bitPngPixels* pngPixels, U32
 IEEE64 getPixelsWidthOverHeightAspectRatio(Rgb8bitPngPixels* pngPixels);
 U32 getPixelsMinimumDimension(Rgb8bitPngPixels* pngPixels);
 
-#endif
+#endif 
