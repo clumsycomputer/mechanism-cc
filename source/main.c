@@ -27,6 +27,7 @@ int main(void)
   IEEE64 cameraTargetHorizontal = 0;
   IEEE64 cameraTargetVertical = 0;
   IEEE64 cameraTargetDepth = 2;
+  // need to verify visually orientation values effect as expected
   IEEE64 cameraOrientationDownHorizontal = 0;
   IEEE64 cameraOrientationDownVertical = -1;
   IEEE64 cameraOrientationDownDepth = 0;
