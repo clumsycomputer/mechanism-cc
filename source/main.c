@@ -15,25 +15,30 @@ int main(void)
   U8 backgroundColorBlue = 0;
   S32 sphereHorizontalVerticalPolarAngleCount = 7;
   S32 spherePolarOrthogonalDepthAngleCount = 7;
+  IEEE64 sphereOriginHorizontal = 0;
+  IEEE64 sphereOriginVertical = 0;
   IEEE64 sphereOriginDepth = 2;
-  IEEE64 sphereRadius = 2;
+  IEEE64 sphereRadius = 1;
   IEEE64 sphereCellMagnitude = 0.1;
   U8 sphereCellColorRed = 0;
   U8 sphereCellColorGreen = 0;
   U8 sphereCellColorBlue = 0;
   IEEE64 cameraPositionHorizontal = 0;
-  IEEE64 cameraPositionVertical = 1;
-  IEEE64 cameraPositionDepth = -1;
-  IEEE64 cameraTargetHorizontal = 0;
-  IEEE64 cameraTargetVertical = 0;
-  IEEE64 cameraTargetDepth = 2;
+  IEEE64 cameraPositionVertical = 0;
+  IEEE64 cameraPositionDepth = 0;
+  IEEE64 cameraTargetHorizontal = sphereOriginHorizontal;
+  IEEE64 cameraTargetVertical = sphereOriginVertical;
+  IEEE64 cameraTargetDepth = sphereOriginDepth;
   // need to verify visually orientation values effect as expected
-  IEEE64 cameraOrientationDownHorizontal = 0;
-  IEEE64 cameraOrientationDownVertical = -1;
-  IEEE64 cameraOrientationDownDepth = 0;
+  IEEE64 cameraOrientationBottomHorizontal = 0;
+  IEEE64 cameraOrientationBottomVertical = 1;
+  IEEE64 cameraOrientationBottomDepth = 0;
+  printf("%f %f %f\n", cameraOrientationBottomHorizontal, cameraOrientationBottomVertical, cameraOrientationBottomDepth);
   IEEE64 perspectiveFieldOfView = M_PI_2;
   IEEE64 perspectiveOrthogonalClippingPlaneRelativeDistanceNear = 0.01;
   IEEE64 perspectiveOrthogonalClippingPlaneRelativeDistanceFar = 10;
+  IEEE64 currentSpherePolarOrthogonalDepthAngle = M_PI_2 + M_PI;
+  IEEE64 currentSphereHorizontalVerticalPolarAngle = M_PI_2 + M_PI;
   U64 pixelsSize =
     sizeofRgb8bitPngPixels(pixelsWidth, pixelsHeight);
   U64 maxEncodingSize =
@@ -104,20 +109,20 @@ int main(void)
     calcVector3CrossProductHorizontal(
       cameraNormalForwardVertical,
       cameraNormalForwardDepth,
-      cameraOrientationDownVertical,
-      cameraOrientationDownDepth);
+      cameraOrientationBottomVertical,
+      cameraOrientationBottomDepth);
   IEEE64 cameraRightVertical =
     calcVector3CrossProductVertical(
       cameraNormalForwardHorizontal,
       cameraNormalForwardDepth,
-      cameraOrientationDownHorizontal,
-      cameraOrientationDownDepth);
+      cameraOrientationBottomHorizontal,
+      cameraOrientationBottomDepth);
   IEEE64 cameraRightDepth =
     calcVector3CrossProductDepth(
       cameraNormalForwardHorizontal,
       cameraNormalForwardVertical,
-      cameraOrientationDownHorizontal,
-      cameraOrientationDownVertical);
+      cameraOrientationBottomHorizontal,
+      cameraOrientationBottomVertical);
   IEEE64 cameraRightMagnitude =
     calcVector3Magnitude(
       cameraRightHorizontal,
@@ -197,7 +202,7 @@ int main(void)
       0,
       0,
       cameraNormalRightHorizontal,
-      cameraOrientationDownHorizontal,
+      cameraOrientationBottomHorizontal,
       -cameraNormalForwardHorizontal,
       0);
   IEEE64 transformRowHorizontalColumnVerticalScalar =
@@ -207,7 +212,7 @@ int main(void)
       0,
       0,
       cameraNormalRightVertical,
-      cameraOrientationDownVertical,
+      cameraOrientationBottomVertical,
       -cameraNormalForwardVertical,
       0);
   IEEE64 transformRowHorizontalColumnDepthScalar =
@@ -217,7 +222,7 @@ int main(void)
       0,
       0,
       cameraNormalRightDepth,
-      cameraOrientationDownDepth,
+      cameraOrientationBottomDepth,
       -cameraNormalForwardDepth,
       0);
   IEEE64 transformRowHorizontalColumnHomogeneousScalar =
@@ -237,7 +242,7 @@ int main(void)
       0,
       0,
       cameraNormalRightHorizontal,
-      cameraOrientationDownHorizontal,
+      cameraOrientationBottomHorizontal,
       -cameraNormalForwardHorizontal,
       0);
   IEEE64 transformRowVerticalColumnVerticalScalar =
@@ -247,7 +252,7 @@ int main(void)
       0,
       0,
       cameraNormalRightVertical,
-      cameraOrientationDownVertical,
+      cameraOrientationBottomVertical,
       -cameraNormalForwardVertical,
       0);
   IEEE64 transformRowVerticalColumnDepthScalar =
@@ -257,7 +262,7 @@ int main(void)
       0,
       0,
       cameraNormalRightDepth,
-      cameraOrientationDownDepth,
+      cameraOrientationBottomDepth,
       -cameraNormalForwardDepth,
       0);
   IEEE64 transformRowVerticalColumnHomogeneousScalar =
@@ -277,7 +282,7 @@ int main(void)
       perspectiveDepthRowDepthColumnScalar,
       perspectiveDepthRowHomogeneousColumnScalar,
       cameraNormalRightHorizontal,
-      cameraOrientationDownHorizontal,
+      cameraOrientationBottomHorizontal,
       -cameraNormalForwardHorizontal,
       0);
   IEEE64 transformRowDepthColumnVerticalScalar =
@@ -287,7 +292,7 @@ int main(void)
       perspectiveDepthRowDepthColumnScalar,
       perspectiveDepthRowHomogeneousColumnScalar,
       cameraNormalRightVertical,
-      cameraOrientationDownVertical,
+      cameraOrientationBottomVertical,
       -cameraNormalForwardVertical,
       0);
   IEEE64 transformRowDepthColumnDepthScalar =
@@ -297,7 +302,7 @@ int main(void)
       perspectiveDepthRowDepthColumnScalar,
       perspectiveDepthRowHomogeneousColumnScalar,
       cameraNormalRightDepth,
-      cameraOrientationDownDepth,
+      cameraOrientationBottomDepth,
       -cameraNormalForwardDepth,
       0);
   IEEE64 transformRowDepthColumnHomogeneousScalar =
@@ -317,7 +322,7 @@ int main(void)
       1,
       0,
       cameraNormalRightHorizontal,
-      cameraOrientationDownHorizontal,
+      cameraOrientationBottomHorizontal,
       -cameraNormalForwardHorizontal,
       0);
   IEEE64 transformRowHomogeneousColumnVerticalScalar =
@@ -327,7 +332,7 @@ int main(void)
       1,
       0,
       cameraNormalRightVertical,
-      cameraOrientationDownVertical,
+      cameraOrientationBottomVertical,
       -cameraNormalForwardVertical,
       0);
   IEEE64 transformRowHomogeneousColumnDepthScalar =
@@ -337,7 +342,7 @@ int main(void)
       1,
       0,
       cameraNormalRightDepth,
-      cameraOrientationDownDepth,
+      cameraOrientationBottomDepth,
       -cameraNormalForwardDepth,
       0);
   IEEE64 transformRowHomogeneousColumnHomogeneousScalar =
@@ -350,8 +355,6 @@ int main(void)
       cameraRowVerticalColumnHomogeneousScalar,
       cameraRowDepthColumnHomogeneousScalar,
       1);
-  IEEE64 currentSpherePolarOrthogonalDepthAngle = 0;
-  IEEE64 currentSphereHorizontalVerticalPolarAngle = M_PI_2;
   IEEE64 spherePointHorizontal =
     sphereRadius * sin(currentSpherePolarOrthogonalDepthAngle) * cos(currentSphereHorizontalVerticalPolarAngle);
   IEEE64 spherePointVertical =
@@ -406,6 +409,7 @@ int main(void)
     transformPointVertical / transformPointHomogeneous;
   IEEE64 cartesianPointDepth =
     transformPointDepth / transformPointHomogeneous;
+  printf("%f %f %f\n", cartesianPointHorizontal, cartesianPointVertical, cartesianPointDepth);
   IEEE64 cartesianCellMagnitude =
     sphereCellMagnitude / transformPointHomogeneous;
   IEEE64 pixelsCellPointHorizontal =
